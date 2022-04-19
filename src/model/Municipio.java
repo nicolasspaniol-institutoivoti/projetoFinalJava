@@ -5,6 +5,7 @@ import util.Estado;
 public class Municipio {
     int idMunicipio;
     String nome;
+    Estado estado;
 
     public Estado getEstado() {
         return estado;
@@ -13,8 +14,6 @@ public class Municipio {
     public void setEstado(Estado estado) {
         this.estado = estado;
     }
-
-    Estado estado;
 
     public int getIdMunicipio() {
         return idMunicipio;
