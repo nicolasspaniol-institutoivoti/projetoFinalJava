@@ -1,8 +1,6 @@
 package dao;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class DataSource {
     private Connection connection;
@@ -40,6 +38,39 @@ public class DataSource {
         }
         catch (Exception ex) {
             System.err.println("Erro ao desconectar: " + ex.getMessage());
+        }
+    }
+
+    public ResultSet get(String SQL, String... valores) {
+        try {
+            PreparedStatement ps = getConnection().prepareStatement(SQL);
+
+            for (int i = 0; i < valores.length; i++) {
+                ps.setString(i + 1, valores[i]);
+            }
+
+            ResultSet rs = ps.executeQuery();
+            ps.close();
+            return rs;
+        }
+        catch (SQLException ex){
+            System.err.println("Erro ao recuperar dados: " + ex.getMessage());
+            return null;
+        }
+    }
+    public void set(String SQL, String... valores) {
+        try {
+            PreparedStatement ps = getConnection().prepareStatement(SQL);
+
+            for (int i = 0; i < valores.length; i++) {
+                ps.setString(i + 1, valores[i]);
+            }
+
+            ps.executeUpdate();
+            ps.close();
+        }
+        catch (SQLException ex){
+            System.err.println("Erro ao recuperar dados: " + ex.getMessage());
         }
     }
 }
