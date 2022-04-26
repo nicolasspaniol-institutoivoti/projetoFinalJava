@@ -1,13 +1,15 @@
 package dao;
 
+import model.CategoriaReporte;
 import model.Municipio;
+import util.DataAccessObject;
 import util.Estado;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class DAOMunicipio {
+public class DAOMunicipio implements DataAccessObject<Municipio> {
     private DataSource dataSource;
 
     public DAOMunicipio(DataSource dataSource) {
@@ -15,15 +17,14 @@ public class DAOMunicipio {
     }
 
     public Municipio fromResultSet(ResultSet rs) throws SQLException {
-        Municipio municipio = new Municipio();
+        Municipio m = new Municipio();
 
-        municipio.setIdMunicipio(rs.getInt("id_municipio"));
-        municipio.setNome(rs.getString("nome"));
-        municipio.setEstado(Estado.valueOf(rs.getString("estado")));
+        m.setIdMunicipio(rs.getInt("id_municipio"));
+        m.setNome(rs.getString("nome"));
+        m.setEstado(Estado.valueOf(rs.getString("estado")));
 
-        return municipio;
+        return m;
     }
-
     public ArrayList<Municipio> lerTudo() throws SQLException {
         ResultSet rs = dataSource.get("select * from municipio");
         ArrayList<Municipio> lista = new ArrayList<>();
@@ -31,13 +32,11 @@ public class DAOMunicipio {
         dataSource.closeDataSource();
         return lista;
     }
-
     public Municipio ler(String termo) throws SQLException {
         ResultSet rs = dataSource.get("select * from municipio where (nome like %?%) limit 1", termo);
         dataSource.closeDataSource();
         return fromResultSet(rs);
     }
-
     public void inserir(Municipio m){
         dataSource.set("insert into municipio (nome, estado) values (?, ?)", m.getNome(), m.getEstado().name());
         dataSource.closeDataSource();
