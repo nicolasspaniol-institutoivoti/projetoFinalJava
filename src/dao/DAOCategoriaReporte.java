@@ -35,11 +35,11 @@ public class DAOCategoriaReporte implements DataAccessObject<CategoriaReporte> {
         return fromResultSet(rs);
     }
     public void inserir(CategoriaReporte cr) {
-        dataSource.set("insert into municipio (descricao) values (?)", cr.getDescricao());
+        dataSource.set("insert into categoria_reporte (descricao) values (?)", cr.getDescricao());
         dataSource.closeDataSource();
     }
     public void alterar(CategoriaReporte cr) {
-        dataSource.set("update municipio set descricao=? where id_categoria_reporte=?", cr.getDescricao(), String.valueOf(cr.getIdCategoriaReporte()));
+        dataSource.set("update categoria_reporte set descricao=? where id_categoria_reporte=?", cr.getDescricao(), String.valueOf(cr.getIdCategoriaReporte()));
         dataSource.closeDataSource();
     }
     public void deletar(int codigo) {
