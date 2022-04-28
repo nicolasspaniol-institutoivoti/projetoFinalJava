@@ -10,20 +10,18 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class DAOMunicipio implements DataAccessObject<Municipio> {
-    private DataSource dataSource;
+    private final DataSource dataSource;
 
     public DAOMunicipio(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
     public Municipio fromResultSet(ResultSet rs) throws SQLException {
-        Municipio m = new Municipio();
-
-        m.setIdMunicipio(rs.getInt("id_municipio"));
-        m.setNome(rs.getString("nome"));
-        m.setEstado(Estado.valueOf(rs.getString("estado")));
-
-        return m;
+        return new Municipio(
+                rs.getInt("id_municipio"),
+                rs.getString("nome"),
+                Estado.valueOf(rs.getString("estado"))
+        );
     }
     public ArrayList<Municipio> lerTudo() throws SQLException {
         ResultSet rs = dataSource.get("select * from municipio");
@@ -33,20 +31,35 @@ public class DAOMunicipio implements DataAccessObject<Municipio> {
         return lista;
     }
     public Municipio ler(String termo) throws SQLException {
-        ResultSet rs = dataSource.get("select * from municipio where (nome like %?%) limit 1", termo);
+        ResultSet rs = dataSource.get(
+                "select * from municipio where (nome like %?%) limit 1",
+                termo
+        );
         dataSource.closeDataSource();
         return fromResultSet(rs);
     }
     public void inserir(Municipio m){
-        dataSource.set("insert into municipio (nome, estado) values (?, ?)", m.getNome(), m.getEstado().name());
+        dataSource.set(
+                "insert into municipio (nome, estado) values (?, ?)",
+                m.nome(),
+                m.estado().name()
+        );
         dataSource.closeDataSource();
     }
     public void alterar(Municipio m) {
-        dataSource.set("update municipio set nome=?, estado=? where id_municipio=?", m.getNome(), m.getEstado().name(), String.valueOf(m.getIdMunicipio()));
+        dataSource.set(
+                "update municipio set nome=?, estado=? where id_municipio=?",
+                m.nome(),
+                m.estado().name(),
+                String.valueOf(m.idMunicipio())
+        );
         dataSource.closeDataSource();
     }
     public void deletar(int codigo) {
-        dataSource.set("delete from municipio where (id_municipio = ?)", String.valueOf(codigo));
+        dataSource.set(
+                "delete from municipio where (id_municipio = ?)",
+                String.valueOf(codigo)
+        );
         dataSource.closeDataSource();
     }
 }

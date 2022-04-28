@@ -8,7 +8,9 @@ public class Menu extends JFrame {
     public Menu() {
         setContentPane(mainPanel);
         setVisible(true);
-        this.pack();
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        pack();
+        setTitle("Painel do administrador");
     }
 
     public static void main(String[] args) {
@@ -16,7 +18,7 @@ public class Menu extends JFrame {
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
         }
         catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "Erro: " + ex.getMessage());
+            JOptionPane.showMessageDialog(null, "Erro ao definir estilo de janela: " + ex.getMessage());
         }
         Menu menu = new Menu();
     }

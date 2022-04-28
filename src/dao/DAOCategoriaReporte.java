@@ -8,19 +8,17 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class DAOCategoriaReporte implements DataAccessObject<CategoriaReporte> {
-    private DataSource dataSource;
+    private final DataSource dataSource;
 
     public DAOCategoriaReporte(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
     public CategoriaReporte fromResultSet(ResultSet rs) throws SQLException {
-        CategoriaReporte cr = new CategoriaReporte();
-
-        cr.setIdCategoriaReporte(rs.getInt("id_categoria_reporte"));
-        cr.setDescricao(rs.getString("descricao"));
-
-        return cr;
+        return new CategoriaReporte(
+                rs.getInt("id_categoria_reporte"),
+                rs.getString("descricao")
+        );
     }
     public ArrayList<CategoriaReporte> lerTudo() throws SQLException {
         ResultSet rs = dataSource.get("select * from categoria_reporte");
@@ -35,11 +33,11 @@ public class DAOCategoriaReporte implements DataAccessObject<CategoriaReporte> {
         return fromResultSet(rs);
     }
     public void inserir(CategoriaReporte cr) {
-        dataSource.set("insert into categoria_reporte (descricao) values (?)", cr.getDescricao());
+        dataSource.set("insert into categoria_reporte (descricao) values (?)", cr.descricao());
         dataSource.closeDataSource();
     }
     public void alterar(CategoriaReporte cr) {
-        dataSource.set("update categoria_reporte set descricao=? where id_categoria_reporte=?", cr.getDescricao(), String.valueOf(cr.getIdCategoriaReporte()));
+        dataSource.set("update categoria_reporte set descricao=? where id_categoria_reporte=?", cr.descricao(), String.valueOf(cr.idCategoriaReporte()));
         dataSource.closeDataSource();
     }
     public void deletar(int codigo) {
