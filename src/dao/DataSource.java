@@ -7,13 +7,18 @@ public class DataSource {
 
     public DataSource() {
         try{
-            String hostname = "192.168.20.3";
+            String endereco = "192.168.20.3";
             int porta = 3306;
             String banco = "ecommerce_nicolasspaniol";
             String usuario = "root";
             String senha = "12345";
 
-            String url = "jdbc:mysql://" + hostname + ":" + porta + "/" + banco + "?useTimezone=true&serverTimezone=UTC";
+            String url = String.format(
+                    "jdbc:mysql://%s:%d/%s?useTimezone=true&serverTimezone=UTC",
+                    endereco,
+                    porta,
+                    banco
+            );
 
             DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());
             connection = DriverManager.getConnection(url, usuario, senha);
@@ -28,10 +33,6 @@ public class DataSource {
         }
     }
 
-    public Connection getConnection() {
-        return this.connection;
-    }
-
     public void closeDataSource() {
         try{
             connection.close();
@@ -43,7 +44,7 @@ public class DataSource {
 
     public ResultSet get(String SQL, String... valores) {
         try {
-            PreparedStatement ps = getConnection().prepareStatement(SQL);
+            PreparedStatement ps = connection.prepareStatement(SQL);
 
             for (int i = 0; i < valores.length; i++) {
                 ps.setString(i + 1, valores[i]);
@@ -60,7 +61,7 @@ public class DataSource {
     }
     public void set(String SQL, String... valores) {
         try {
-            PreparedStatement ps = getConnection().prepareStatement(SQL);
+            PreparedStatement ps = connection.prepareStatement(SQL);
 
             for (int i = 0; i < valores.length; i++) {
                 ps.setString(i + 1, valores[i]);
