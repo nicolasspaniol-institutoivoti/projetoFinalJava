@@ -1,7 +1,6 @@
 package dao;
 
 import model.CategoriaReporte;
-import util.DataAccessObject;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -37,11 +36,18 @@ public class DAOCategoriaReporte implements DataAccessObject<CategoriaReporte> {
         dataSource.closeDataSource();
     }
     public void alterar(CategoriaReporte cr) {
-        dataSource.set("update categoria_reporte set descricao=? where id_categoria_reporte=?", cr.descricao(), String.valueOf(cr.idCategoriaReporte()));
+        dataSource.set(
+                "update categoria_reporte set descricao=? where id_categoria_reporte=?",
+                cr.descricao(),
+                String.valueOf(cr.idCategoriaReporte()));
         dataSource.closeDataSource();
     }
     public void deletar(int codigo) {
         dataSource.set("delete from categoria_reporte where (id_municipio = ?)", String.valueOf(codigo));
         dataSource.closeDataSource();
+    }
+
+    public String[] nomeCampos() {
+        return new String[] {"ID", "descrição"};
     }
 }

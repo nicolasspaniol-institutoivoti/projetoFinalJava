@@ -1,8 +1,6 @@
 package dao;
 
-import model.CategoriaReporte;
 import model.Municipio;
-import util.DataAccessObject;
 import util.Estado;
 
 import java.sql.ResultSet;
@@ -31,19 +29,12 @@ public class DAOMunicipio implements DataAccessObject<Municipio> {
         return lista;
     }
     public Municipio ler(String termo) throws SQLException {
-        ResultSet rs = dataSource.get(
-                "select * from municipio where (nome like %?%) limit 1",
-                termo
-        );
+        ResultSet rs = dataSource.get("select * from municipio where (nome like %?%) limit 1", termo);
         dataSource.closeDataSource();
         return fromResultSet(rs);
     }
     public void inserir(Municipio m){
-        dataSource.set(
-                "insert into municipio (nome, estado) values (?, ?)",
-                m.nome(),
-                m.estado().name()
-        );
+        dataSource.set("insert into municipio (nome, estado) values (?, ?)", m.nome(), m.estado().name());
         dataSource.closeDataSource();
     }
     public void alterar(Municipio m) {
@@ -56,10 +47,11 @@ public class DAOMunicipio implements DataAccessObject<Municipio> {
         dataSource.closeDataSource();
     }
     public void deletar(int codigo) {
-        dataSource.set(
-                "delete from municipio where (id_municipio = ?)",
-                String.valueOf(codigo)
-        );
+        dataSource.set("delete from municipio where (id_municipio = ?)", String.valueOf(codigo));
         dataSource.closeDataSource();
+    }
+
+    public String[] nomeCampos() {
+        return new String[] {"ID", "nome", "estado"};
     }
 }
