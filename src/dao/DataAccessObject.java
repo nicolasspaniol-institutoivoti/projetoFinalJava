@@ -12,5 +12,6 @@ public interface DataAccessObject<T> {
     void alterar(T obj);
     void deletar(int id);
 
-    String[] nomeCampos();
+    String[] colunas();
+    Object[] valores(Object obj);
 }

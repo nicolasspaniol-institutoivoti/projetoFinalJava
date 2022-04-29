@@ -1,9 +1,13 @@
 package view;
 
 import dao.*;
+import model.Municipio;
 import util.DAOTableModel;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import java.sql.SQLException;
 import java.util.Objects;
 
 public class Menu extends JFrame {
@@ -29,8 +33,9 @@ public class Menu extends JFrame {
 
     public void alterarTabela() {
         String selecionado = tabelaComboBox.getSelectedItem().toString();
-        //DataAccessObject daoTabela = DAOFactory.CriarDAO(selecionado, new DataSource());
-        tabela.setModel(new DAOTableModel());
+        DataAccessObject<?> daoTabela = DAOFactory.CriarDAO(selecionado, new DataSource());
+        TableModel model = new DAOTableModel(daoTabela);
+        tabela.setModel(model);
     }
 
     public static void main(String[] args) {

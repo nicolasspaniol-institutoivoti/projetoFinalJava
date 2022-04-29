@@ -47,7 +47,12 @@ public class DAOCategoriaReporte implements DataAccessObject<CategoriaReporte> {
         dataSource.closeDataSource();
     }
 
-    public String[] nomeCampos() {
+    public String[] colunas() {
         return new String[] {"ID", "descrição"};
+    }
+
+    public Object[] valores(Object obj) {
+        CategoriaReporte cr = (CategoriaReporte) obj;
+        return new Object[] {cr.idCategoriaReporte(), cr.descricao()};
     }
 }

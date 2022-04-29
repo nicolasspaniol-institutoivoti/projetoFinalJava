@@ -51,7 +51,11 @@ public class DAOMunicipio implements DataAccessObject<Municipio> {
         dataSource.closeDataSource();
     }
 
-    public String[] nomeCampos() {
+    public String[] colunas() {
         return new String[] {"ID", "nome", "estado"};
+    }
+    public Object[] valores(Object obj) {
+        Municipio m = (Municipio) obj;
+        return new Object[] {m.idMunicipio(), m.nome(), m.estado()};
     }
 }
