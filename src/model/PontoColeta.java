@@ -1,7 +1,7 @@
 package model;
 
 public record PontoColeta(
-        int idPontoColeta,
+        int id_ponto_coleta,
         String horario,
 
         // Local
@@ -13,6 +13,6 @@ public record PontoColeta(
         String coordenadas,
 
         //FK
-        int idMunicipio,
-        int idFornecedor
+        int id_municipio,
+        int id_fornecedor
 ) {}

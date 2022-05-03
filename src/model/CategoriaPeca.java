@@ -1,6 +1,6 @@
 package model;
 
 public record CategoriaPeca(
-        int idCategoriaPeca,
+        int id_categoria_peca,
         String descricao
 ) {}

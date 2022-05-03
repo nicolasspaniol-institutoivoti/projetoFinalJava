@@ -3,7 +3,7 @@ package model;
 import util.TipoFornecedor;
 
 public record Fornecedor(
-        int idFornecedor,
+        int id_fornecedor,
         TipoFornecedor tipo,
         boolean ativo,
 
@@ -21,5 +21,8 @@ public record Fornecedor(
         String bairro,
         int cep,
         String complemento,
-        String coordenadas
+        String coordenadas,
+
+        //FK
+        int id_municipio
 ) {}

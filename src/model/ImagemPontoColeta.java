@@ -1,9 +1,9 @@
 package model;
 
 public record ImagemPontoColeta(
-        int idImagemPontoColeta,
+        int id_imagem_ponto_coleta,
         String caminho,
 
         // FK
-        int idPontoColeta
+        int id_ponto_coleta
 ) {}

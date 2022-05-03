@@ -1,10 +1,10 @@
 package model;
 
 public record Reporte(
-        int idReporte,
+        int id_reporte,
         String comentario,
 
         // FK
-        int idCategoriaReporte,
-        int idPeca
+        int id_categoria_reporte,
+        int id_peca
 ) {}
