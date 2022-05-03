@@ -1,50 +1,68 @@
 package view;
 
-import dao.*;
-import model.Municipio;
-import util.DAOTableModel;
+import dao.DAO;
+import dao.DataSource;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
-import java.sql.SQLException;
-import java.util.Objects;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class Menu extends JFrame {
     private JPanel mainPanel;
     private JTable tabela;
-    private JComboBox<String> tabelaComboBox;
+    private JComboBox<String> tabelaCB;
+
+    private DataSource ds;
 
     public Menu() {
+        // Inicializa a janela
         setContentPane(mainPanel);
-        setVisible(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         pack();
         setTitle("Painel do administrador");
+        setVisible(true);
 
-        tabelaComboBox.setModel(new DefaultComboBoxModel<>(DAOFactory.listaTabelas()));
-        tabelaComboBox.addActionListener(e -> {
-            if (Objects.equals(e.getActionCommand(), "comboBoxChanged")) {
-                alterarTabela();
+        // Define as opcoes da combobox de selecao de tabela
+        tabelaCB.setModel(new DefaultComboBoxModel<>(DAO.tabelas));
+        // Quando a selecao for alterada, carrega a tabela novamente
+        tabelaCB.addActionListener(e -> carregarTabela());
+
+        // Inicia a conexao com o BD
+        ds = new DataSource();
+
+        // Encerra a conexao quando a janela for fechada
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                ds.fecharConexao();
+                super.windowClosing(e);
             }
         });
-        alterarTabela();
+
+        // Carrega a tabela selecionada
+        carregarTabela();
     }
 
-    public void alterarTabela() {
-        String selecionado = tabelaComboBox.getSelectedItem().toString();
-        DataAccessObject<?> daoTabela = DAOFactory.CriarDAO(selecionado, new DataSource());
+    void carregarTabela() {
+        // Cria um DAO da tabela selecionada
+        String selecionado = tabelaCB.getSelectedItem().toString();
+        DAO<?> daoTabela = DAO.criar(selecionado, ds);
+
+        // Define um novo modelo de tabela a partir do DAO
         TableModel model = new DAOTableModel(daoTabela);
         tabela.setModel(model);
     }
 
     public static void main(String[] args) {
+        // Deixa a janela com o visual padrao do Windows
         try {
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
         }
         catch (Exception ex) {
             System.err.println("Erro ao definir estilo de janela: " + ex.getMessage());
         }
+
+        // Cria uma nova instancia da janela
         new Menu();
     }
 }

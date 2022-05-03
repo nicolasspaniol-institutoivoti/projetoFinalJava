@@ -1,16 +1,18 @@
-package util;
+package view;
 
-import dao.DataAccessObject;
+import dao.DAO;
+import dao.DataSource;
+import model.Municipio;
 
 import javax.swing.table.AbstractTableModel;
 import java.sql.SQLException;
 
 public class DAOTableModel extends AbstractTableModel {
-    DataAccessObject<?> daoTabela;
+    DAO<?> daoTabela;
     String[] nomeColunas;
     Object[] registros;
 
-    public DAOTableModel(DataAccessObject<?> daoTabela) {
+    public DAOTableModel(DAO<?> daoTabela) {
         this.daoTabela = daoTabela;
         this.nomeColunas = daoTabela.colunas();
 
@@ -35,7 +37,13 @@ public class DAOTableModel extends AbstractTableModel {
     }
 
     public Object getValueAt(int rowIndex, int columnIndex) {
-        return daoTabela.valores(registros[rowIndex])[columnIndex];
+        try {
+            return daoTabela.lerValor(registros[rowIndex], columnIndex);
+        }
+        catch (IllegalAccessException ex) {
+            System.err.println("Erro de acesso [linha %d, coluna %d]".formatted(rowIndex, columnIndex));
+            return null;
+        }
     }
 
     public boolean isCellEditable(int rowIndex, int columnIndex) {

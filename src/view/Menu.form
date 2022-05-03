@@ -16,7 +16,7 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="4d962" class="javax.swing.JComboBox" binding="tabelaComboBox">
+          <component id="4d962" class="javax.swing.JComboBox" binding="tabelaCB">
             <constraints>
               <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false">
                 <minimum-size width="200" height="-1"/>

@@ -1,58 +1,52 @@
 package dao;
 
 import model.CategoriaReporte;
+import model.Municipio;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class DAOCategoriaReporte implements DataAccessObject<CategoriaReporte> {
-    private final DataSource dataSource;
-
-    public DAOCategoriaReporte(DataSource dataSource) {
-        this.dataSource = dataSource;
+public class DAOCategoriaReporte extends DAO<CategoriaReporte> {
+    public DAOCategoriaReporte(DataSource ds) {
+        super(ds);
     }
 
-    public CategoriaReporte fromResultSet(ResultSet rs) throws SQLException {
+    public CategoriaReporte lerRegistro(ResultSet rs) throws SQLException {
         return new CategoriaReporte(
                 rs.getInt("id_categoria_reporte"),
                 rs.getString("descricao")
         );
     }
     public ArrayList<CategoriaReporte> lerTudo() throws SQLException {
-        ResultSet rs = dataSource.get("select * from categoria_reporte");
-        ArrayList<CategoriaReporte> lista = new ArrayList<>();
-        while (rs.next()) lista.add(fromResultSet(rs));
-        dataSource.closeDataSource();
-        return lista;
+        try (PreparedStatement ps = dataSource.preparar("select * from categoria_reporte"); ResultSet rs = ps.executeQuery()) {
+            ArrayList<CategoriaReporte> lista = new ArrayList<>();
+            while (rs.next()) lista.add(lerRegistro(rs));
+            return lista;
+        }
     }
-    public CategoriaReporte ler(String termo) throws SQLException {
-        ResultSet rs = dataSource.get("select * from categoria_reporte where (descricao like %?%) limit 1", termo);
-        dataSource.closeDataSource();
-        return fromResultSet(rs);
+    public void inserir(CategoriaReporte cr) throws SQLException {
+        try (PreparedStatement ps = dataSource.preparar(
+                "insert into categoria_reporte (descricao) values (?)",
+                cr.descricao()
+        )) {}
     }
-    public void inserir(CategoriaReporte cr) {
-        dataSource.set("insert into categoria_reporte (descricao) values (?)", cr.descricao());
-        dataSource.closeDataSource();
-    }
-    public void alterar(CategoriaReporte cr) {
-        dataSource.set(
+    public void alterar(CategoriaReporte cr) throws SQLException {
+        try (PreparedStatement ps = dataSource.preparar(
                 "update categoria_reporte set descricao=? where id_categoria_reporte=?",
                 cr.descricao(),
-                String.valueOf(cr.idCategoriaReporte()));
-        dataSource.closeDataSource();
+                String.valueOf(cr.idCategoriaReporte())
+        )) {}
     }
-    public void deletar(int codigo) {
-        dataSource.set("delete from categoria_reporte where (id_municipio = ?)", String.valueOf(codigo));
-        dataSource.closeDataSource();
-    }
-
-    public String[] colunas() {
-        return new String[] {"ID", "descrição"};
+    public void deletar(int codigo) throws SQLException {
+        try (PreparedStatement ps = dataSource.preparar(
+                "delete from categoria_reporte where (id_municipio = ?)",
+                String.valueOf(codigo)
+        )) {}
     }
 
-    public Object[] valores(Object obj) {
-        CategoriaReporte cr = (CategoriaReporte) obj;
-        return new Object[] {cr.idCategoriaReporte(), cr.descricao()};
+    public Class<?> tipoRegistro() {
+        return CategoriaReporte.class;
     }
 }

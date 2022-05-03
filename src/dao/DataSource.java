@@ -3,75 +3,49 @@ package dao;
 import java.sql.*;
 
 public class DataSource {
-    private Connection connection;
+    private Connection conexao;
+    static boolean registrado = false;
+
+    private final String urlBase = "jdbc:mysql://%s:3306/projeto_ms?useTimezone=true&serverTimezone=UTC";
+    private final String[] conexaoLocal = new String[] {
+            "localhost", // endereco
+            "root", // usuario
+            "projeto_MS_2022" // senha
+    };
+    private final String[] conexaoEscola = new String[] {
+            "192.168.20.3", // endereco
+            "root", // usuario
+            "12345" // senha
+    };
 
     public DataSource() {
         try{
-            String endereco = "192.168.20.3";
-            int porta = 3306;
-            String banco = "ecommerce_nicolasspaniol";
-            String usuario = "root";
-            String senha = "12345";
-
-            String url = String.format(
-                    "jdbc:mysql://%s:%d/%s?useTimezone=true&serverTimezone=UTC",
-                    endereco,
-                    porta,
-                    banco
-            );
-
-            DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());
-            connection = DriverManager.getConnection(url, usuario, senha);
-
+            if (!registrado) {
+                DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());
+                registrado = true;
+            }
+            conexao = DriverManager.getConnection(urlBase.formatted(conexaoLocal[0]), conexaoLocal[1], conexaoLocal[2]);
             System.out.println("Conectado");
         }
         catch (SQLException ex) {
             System.err.println("Erro na conexão: " + ex.getMessage());
         }
-        catch (Exception ex) {
-            System.err.println("Erro geral: " + ex.getMessage());
-        }
     }
 
-    public void closeDataSource() {
-        try{
-            connection.close();
-        }
-        catch (Exception ex) {
-            System.err.println("Erro ao desconectar: " + ex.getMessage());
-        }
-    }
-
-    public ResultSet get(String SQL, String... valores) {
+    public void fecharConexao() {
         try {
-            PreparedStatement ps = connection.prepareStatement(SQL);
-
-            for (int i = 0; i < valores.length; i++) {
-                ps.setString(i + 1, valores[i]);
-            }
-
-            ResultSet rs = ps.executeQuery();
-            ps.close();
-            return rs;
-        }
-        catch (SQLException ex){
-            System.err.println("Erro ao recuperar dados: " + ex.getMessage());
-            return null;
-        }
+            System.out.println("Desconectado");
+            conexao.close();
+        } catch (SQLException ignored) {}
     }
-    public void set(String SQL, String... valores) {
-        try {
-            PreparedStatement ps = connection.prepareStatement(SQL);
 
-            for (int i = 0; i < valores.length; i++) {
-                ps.setString(i + 1, valores[i]);
-            }
+    public PreparedStatement preparar(String SQL, String... valores) throws SQLException {
+        PreparedStatement ps = conexao.prepareStatement(SQL);
 
-            ps.executeUpdate();
-            ps.close();
+        for (int i = 0; i < valores.length; i++) {
+            ps.setString(i + 1, valores[i]);
         }
-        catch (SQLException ex){
-            System.err.println("Erro ao recuperar dados: " + ex.getMessage());
-        }
+
+        return ps;
     }
 }
