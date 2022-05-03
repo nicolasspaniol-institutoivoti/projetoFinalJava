@@ -6,25 +6,18 @@ public class DataSource {
     private Connection conexao;
     static boolean registrado = false;
 
-    private final String urlBase = "jdbc:mysql://%s:3306/projeto_ms?useTimezone=true&serverTimezone=UTC";
-    private final String[] conexaoLocal = new String[] {
-            "localhost", // endereco
-            "root", // usuario
-            "projeto_MS_2022" // senha
-    };
-    private final String[] conexaoEscola = new String[] {
-            "192.168.20.3", // endereco
-            "root", // usuario
-            "12345" // senha
-    };
+    private static final Conexao conexaoLocal = new Conexao("localhost", 3306, "projeto_ms", "root", "projeto_MS_2022");
+    private static final Conexao conexaoEscola = new Conexao("192.168.20.3", 3306, "projeto_ms", "root", "12345");
 
     public DataSource() {
+        Conexao fonteConexao = conexaoEscola;
+
         try{
             if (!registrado) {
                 DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());
                 registrado = true;
             }
-            conexao = DriverManager.getConnection(urlBase.formatted(conexaoLocal[0]), conexaoLocal[1], conexaoLocal[2]);
+            conexao = DriverManager.getConnection(fonteConexao.url(), fonteConexao.usuario(), fonteConexao.senha());
             System.out.println("Conectado");
         }
         catch (SQLException ex) {
