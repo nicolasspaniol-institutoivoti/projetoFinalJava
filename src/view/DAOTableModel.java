@@ -5,6 +5,7 @@ import dao.DataSource;
 import model.Municipio;
 
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellEditor;
 import java.sql.SQLException;
 
 public class DAOTableModel extends AbstractTableModel {
@@ -40,13 +41,18 @@ public class DAOTableModel extends AbstractTableModel {
         try {
             return daoTabela.lerValor(registros[rowIndex], columnIndex);
         }
-        catch (IllegalAccessException ex) {
-            System.err.println("Erro de acesso [linha %d, coluna %d]".formatted(rowIndex, columnIndex));
+        catch (Exception ex) {
+            System.err.printf("Erro de acesso [linha %d, coluna %d]%n", rowIndex, columnIndex);
             return null;
         }
     }
 
+    @Override
+    public Class<?> getColumnClass(int columnIndex) {
+        return daoTabela.lerClasse(columnIndex);
+    }
+
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        return true;
+        return columnIndex > 0;
     }
 }

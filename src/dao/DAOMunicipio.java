@@ -39,7 +39,7 @@ public class DAOMunicipio extends DAO<Municipio> {
                 "update municipio set nome=?, estado=? where id_municipio=?",
                 m.nome(),
                 m.estado().name(),
-                String.valueOf(m.idMunicipio())
+                String.valueOf(m.id_municipio())
         )) {}
     }
     public void deletar(int codigo) throws SQLException {

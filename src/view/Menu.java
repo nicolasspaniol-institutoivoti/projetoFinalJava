@@ -2,6 +2,8 @@ package view;
 
 import dao.DAO;
 import dao.DataSource;
+import util.Estado;
+import util.TipoFornecedor;
 
 import javax.swing.*;
 import javax.swing.table.TableModel;
@@ -39,17 +41,25 @@ public class Menu extends JFrame {
             }
         });
 
-        // Carrega a tabela selecionada
+        // Inicializa a JTable com os valores da tabela selecionada
+        prepararTabela();
         carregarTabela();
+    }
+
+    void prepararTabela() {
+        tabela.setDefaultEditor(Estado.class, new DefaultCellEditor(new JComboBox(Estado.values())));
+
+        var tipofornCB = new JComboBox(new Boolean[] {true, false});
+        tabela.setDefaultEditor(TipoFornecedor.class, new DefaultCellEditor(tipofornCB));
     }
 
     void carregarTabela() {
         // Cria um DAO da tabela selecionada
         String selecionado = tabelaCB.getSelectedItem().toString();
-        DAO<?> daoTabela = DAO.criar(selecionado, ds);
+        DAO<?> daoSelecionado = DAO.criar(selecionado, ds);
 
         // Define um novo modelo de tabela a partir do DAO
-        TableModel model = new DAOTableModel(daoTabela);
+        TableModel model = new DAOTableModel(daoSelecionado);
         tabela.setModel(model);
     }
 

@@ -1,27 +1,31 @@
+/*
 package dao;
 
 import model.CategoriaReporte;
-import model.Municipio;
+import model.Fornecedor;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class DAOCategoriaReporte extends DAO<CategoriaReporte> {
-    public DAOCategoriaReporte(DataSource ds) {
+public class DAOFornecedor extends DAO<Fornecedor> {
+    public DAOFornecedor(DataSource ds) {
         super(ds);
     }
 
-    public CategoriaReporte lerRegistro(ResultSet rs) throws SQLException {
-        return new CategoriaReporte(
-                rs.getInt("id_categoria_reporte"),
-                rs.getString("descricao")
+    public Fornecedor lerRegistro(ResultSet rs) throws SQLException {
+        return new Fornecedor(
+                rs.getInt("id_fornecedor"),
+                rs.getBoolean("tipo"),
+                rs.getBoolean("ativo"),
+                rs.getString("nome"),
+                rs.getString()
         );
     }
-    public ArrayList<CategoriaReporte> lerTudo() throws SQLException {
+    public ArrayList<Fornecedor> lerTudo() throws SQLException {
         try (PreparedStatement ps = dataSource.preparar("select * from categoria_reporte"); ResultSet rs = ps.executeQuery()) {
-            ArrayList<CategoriaReporte> lista = new ArrayList<>();
+            ArrayList<Fornecedor> lista = new ArrayList<>();
             while (rs.next()) lista.add(lerRegistro(rs));
             return lista;
         }
@@ -36,7 +40,7 @@ public class DAOCategoriaReporte extends DAO<CategoriaReporte> {
         try (PreparedStatement ps = dataSource.preparar(
                 "update categoria_reporte set descricao=? where id_categoria_reporte=?",
                 cr.descricao(),
-                String.valueOf(cr.id_categoria_reporte())
+                String.valueOf(cr.idCategoriaReporte())
         )) {}
     }
     public void deletar(int codigo) throws SQLException {
@@ -47,6 +51,6 @@ public class DAOCategoriaReporte extends DAO<CategoriaReporte> {
     }
 
     public Class<?> tipoRegistro() {
-        return CategoriaReporte.class;
+        return Fornecedor.class;
     }
-}
+}*/
