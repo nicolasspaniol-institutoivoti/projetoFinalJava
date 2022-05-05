@@ -2,9 +2,9 @@ package model;
 
 import util.Estado;
 
-public record Municipio (
+public class Municipio {
         @CampoSQL(nomeColuna = "ID")
-        int id_municipio,
-        String nome,
-        Estado estado
-) {}
+        public int id_municipio;
+        public String nome;
+        public Estado estado;
+}

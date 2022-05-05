@@ -1,6 +1,6 @@
 package model;
 
-public record CategoriaPeca(
-        int id_categoria_peca,
-        String descricao
-) {}
+public class CategoriaPeca {
+    public int id_categoria_peca;
+    public String descricao;
+}

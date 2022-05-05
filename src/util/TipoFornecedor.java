@@ -1,10 +1,10 @@
 package util;
 
-public class TipoFornecedor implements TipoCelula<Boolean> {
+public class TipoFornecedor implements TypeMask<Boolean> {
     boolean instituicao;
 
-    public TipoFornecedor(Boolean val) {
-
+    public TipoFornecedor(Boolean instituicao) {
+        this.instituicao = instituicao;
     }
 
     public String nome() {
@@ -15,7 +15,7 @@ public class TipoFornecedor implements TipoCelula<Boolean> {
         instituicao = valor;
     }
 
-    public boolean lerValor() {
+    public Boolean lerValor() {
         return instituicao;
     }
 }

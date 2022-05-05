@@ -1,6 +1,6 @@
 package util;
 
-public interface TipoCelula<T> {
+public interface TypeMask<T> {
     String nome();
     void definirValor(T valor);
     T lerValor();

@@ -1,7 +1,6 @@
 package dao;
 
 import model.CategoriaReporte;
-import model.Municipio;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -32,7 +31,8 @@ public class DAOCategoriaReporte extends DAO<CategoriaReporte> {
                 cr.descricao()
         )) {}
     }
-    public void alterar(CategoriaReporte cr) throws SQLException {
+    public void alterar(Object obj) throws SQLException {
+        CategoriaReporte cr = (CategoriaReporte) obj;
         try (PreparedStatement ps = dataSource.preparar(
                 "update categoria_reporte set descricao=? where id_categoria_reporte=?",
                 cr.descricao(),

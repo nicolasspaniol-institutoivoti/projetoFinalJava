@@ -14,11 +14,11 @@ public class DAOMunicipio extends DAO<Municipio> {
     }
 
     Municipio lerRegistro(ResultSet rs) throws SQLException {
-        return new Municipio(
-                rs.getInt("id_municipio"),
-                rs.getString("nome"),
-                Estado.valueOf(rs.getString("estado"))
-        );
+        Municipio m = new Municipio();
+        m.id_municipio = rs.getInt("id_municipio");
+        m.nome = rs.getString("nome");
+        m.estado = Estado.valueOf(rs.getString("estado"));
+        return m;
     }
     public ArrayList<Municipio> lerTudo() throws SQLException {
         try (PreparedStatement ps = dataSource.preparar("select * from municipio"); ResultSet rs = ps.executeQuery()) {
@@ -30,17 +30,21 @@ public class DAOMunicipio extends DAO<Municipio> {
     public void inserir(Municipio m) throws SQLException {
         try (PreparedStatement ps = dataSource.preparar(
                 "insert into municipio (nome, estado) values (?, ?)",
-                m.nome(),
-                m.estado().name()
+                m.nome,
+                m.estado.name()
         )) {}
     }
-    public void alterar(Municipio m) throws SQLException {
+    public void alterar(Object obj) throws SQLException {
+        Municipio m = (Municipio) obj;
         try (PreparedStatement ps = dataSource.preparar(
                 "update municipio set nome=?, estado=? where id_municipio=?",
-                m.nome(),
-                m.estado().name(),
-                String.valueOf(m.id_municipio())
-        )) {}
+                m.nome,
+                m.estado.name(),
+                String.valueOf(m.id_municipio)
+        )) {
+            ps.executeUpdate();
+            ps.close();
+        }
     }
     public void deletar(int codigo) throws SQLException {
         try (PreparedStatement ps = dataSource.preparar(

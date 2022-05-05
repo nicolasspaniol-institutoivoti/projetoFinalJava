@@ -29,30 +29,41 @@ public class DAOTableModel extends AbstractTableModel {
         return registros.length;
     }
 
-    public String getColumnName(int column) {
-        return nomeColunas[column];
+    public String getColumnName(int col) {
+        return nomeColunas[col];
     }
 
     public int getColumnCount() {
         return nomeColunas.length;
     }
 
-    public Object getValueAt(int rowIndex, int columnIndex) {
+    public Object getValueAt(int row, int col) {
         try {
-            return daoTabela.lerValor(registros[rowIndex], columnIndex);
+            var obj = registros[row];
+            return obj.getClass().getDeclaredFields()[col].get(obj);
         }
-        catch (Exception ex) {
-            System.err.printf("Erro de acesso [linha %d, coluna %d]%n", rowIndex, columnIndex);
+        catch (IllegalAccessException ex) {
+            System.err.printf("Erro de acesso [linha %d, coluna %d]%n", row, col);
             return null;
         }
     }
 
-    @Override
-    public Class<?> getColumnClass(int columnIndex) {
-        return daoTabela.lerClasse(columnIndex);
+    public Class<?> getColumnClass(int col) {
+        return daoTabela.tipoRegistro().getDeclaredFields()[col].getType();
     }
 
-    public boolean isCellEditable(int rowIndex, int columnIndex) {
-        return columnIndex > 0;
+    public boolean isCellEditable(int row, int col) {
+        return col > 0;
+    }
+
+    public void setValueAt(Object aValue, int row, int col) {
+        try {
+            var obj = registros[row];
+            obj.getClass().getDeclaredFields()[col].set(obj, aValue);
+            daoTabela.alterar(obj);
+            registros[row] = obj;
+        } catch (Exception e) {
+            System.err.printf("Erro de alteração [linha %d, coluna %d]%n", row, col);
+        }
     }
 }
