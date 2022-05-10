@@ -13,10 +13,10 @@ public class DAOCategoriaReporte extends DAO<CategoriaReporte> {
     }
 
     public CategoriaReporte lerRegistro(ResultSet rs) throws SQLException {
-        return new CategoriaReporte(
-                rs.getInt("id_categoria_reporte"),
-                rs.getString("descricao")
-        );
+        CategoriaReporte cr = new CategoriaReporte();
+        cr.id_categoria_reporte = rs.getInt("id_categoria_reporte");
+        cr.descricao = rs.getString("descricao");
+        return cr;
     }
     public ArrayList<CategoriaReporte> lerTudo() throws SQLException {
         try (PreparedStatement ps = dataSource.preparar("select * from categoria_reporte"); ResultSet rs = ps.executeQuery()) {
@@ -28,22 +28,28 @@ public class DAOCategoriaReporte extends DAO<CategoriaReporte> {
     public void inserir(CategoriaReporte cr) throws SQLException {
         try (PreparedStatement ps = dataSource.preparar(
                 "insert into categoria_reporte (descricao) values (?)",
-                cr.descricao()
-        )) {}
+                cr.descricao
+        )) {
+            ps.executeUpdate();
+        }
     }
     public void alterar(Object obj) throws SQLException {
         CategoriaReporte cr = (CategoriaReporte) obj;
         try (PreparedStatement ps = dataSource.preparar(
                 "update categoria_reporte set descricao=? where id_categoria_reporte=?",
-                cr.descricao(),
-                String.valueOf(cr.id_categoria_reporte())
-        )) {}
+                cr.descricao,
+                String.valueOf(cr.id_categoria_reporte)
+        )) {
+            ps.executeUpdate();
+        }
     }
     public void deletar(int codigo) throws SQLException {
         try (PreparedStatement ps = dataSource.preparar(
                 "delete from categoria_reporte where (id_municipio = ?)",
                 String.valueOf(codigo)
-        )) {}
+        )) {
+            ps.executeUpdate();
+        }
     }
 
     public Class<?> tipoRegistro() {

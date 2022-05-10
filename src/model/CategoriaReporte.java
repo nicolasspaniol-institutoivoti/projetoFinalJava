@@ -1,8 +1,8 @@
 package model;
 
-public record CategoriaReporte(
+public class CategoriaReporte {
         @CampoSQL(nomeColuna = "ID")
-        int id_categoria_reporte,
+        public int id_categoria_reporte;
         @CampoSQL(nomeColuna = "Descrição")
-        String descricao
-) {}
+        public String descricao;
+}
