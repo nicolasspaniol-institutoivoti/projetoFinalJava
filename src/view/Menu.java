@@ -6,14 +6,19 @@ import util.Estado;
 import util.TipoFornecedor;
 
 import javax.swing.*;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.table.TableModel;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Locale;
 
 public class Menu extends JFrame {
     private JPanel mainPanel;
-    private JTable tabela;
-    private JComboBox<String> tabelaCB;
+    private JTable mainTable;
+    private JComboBox<String> tableComboBox;
+    private JButton addButton;
 
     private DataSource ds;
 
@@ -25,10 +30,35 @@ public class Menu extends JFrame {
         setTitle("Painel do administrador");
         setVisible(true);
 
-        // Define as opcoes da combobox de selecao de tabela
-        tabelaCB.setModel(new DefaultComboBoxModel<>(DAO.tabelas));
-        // Quando a selecao for alterada, carrega a tabela novamente
-        tabelaCB.addActionListener(e -> carregarTabela());
+        // Define as opcoes da combobox de selecao de mainTable
+        tableComboBox.setModel(new DefaultComboBoxModel<>(DAO.tabelas));
+        // Quando a selecao for alterada, carrega a mainTable novamente
+        tableComboBox.addActionListener(e -> carregarTabela());
+
+        // Quando o botão de adicionar for clicado, cria uma nova linha na tabela
+        addButton.addActionListener(e -> addRow());
+
+        // Adiciona opção de deletar registro;
+        final JPopupMenu deletePopup = new JPopupMenu();
+        JMenuItem deleteMenuItem = new JMenuItem("Apagar registro");
+        deletePopup.addPopupMenuListener(new PopupMenuListener() {
+            @Override
+            public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+                if (mainTable.getSelectionModel().getSelectedItemsCount() > 0) return;
+                SwingUtilities.invokeLater(() -> {
+                    int rowAtPoint = mainTable.rowAtPoint(SwingUtilities.convertPoint(deletePopup, new Point(0, 0), mainTable));
+                    if (rowAtPoint > -1) {
+                        mainTable.setRowSelectionInterval(rowAtPoint, rowAtPoint);
+                    }
+                });
+            }
+
+            public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {}
+            public void popupMenuCanceled(PopupMenuEvent e) {}
+        });
+        deletePopup.add(deleteMenuItem);
+        mainTable.setComponentPopupMenu(deletePopup);
+        deleteMenuItem.addActionListener(e -> deleteRow());
 
         // Inicia a conexao com o BD
         ds = new DataSource();
@@ -41,26 +71,38 @@ public class Menu extends JFrame {
             }
         });
 
-        // Inicializa a JTable com os valores da tabela selecionada
+        // Inicializa a JTable com os valores da mainTable selecionada
         prepararTabela();
         carregarTabela();
     }
 
+    private void deleteRow() {
+        var selection = mainTable.getSelectionModel(); 
+        int confirmation = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(), String.format("Apagar %d registro(s)?", selection.getSelectedItemsCount()), "Confirmar alteração", JOptionPane.YES_NO_OPTION);
+        if (confirmation != 0) return;
+
+        mainTable.remove(0);
+    }
+
+    void addRow() {
+
+    }
+
     void prepararTabela() {
-        tabela.setDefaultEditor(Estado.class, new DefaultCellEditor(new JComboBox(Estado.values())));
+        mainTable.setDefaultEditor(Estado.class, new DefaultCellEditor(new JComboBox(Estado.values())));
 
         var tipofornCB = new JComboBox(new Boolean[] {true, false});
-        tabela.setDefaultEditor(TipoFornecedor.class, new DefaultCellEditor(tipofornCB));
+        mainTable.setDefaultEditor(TipoFornecedor.class, new DefaultCellEditor(tipofornCB));
     }
 
     void carregarTabela() {
-        // Cria um DAO da tabela selecionada
-        String selecionado = tabelaCB.getSelectedItem().toString();
+        // Cria um DAO da mainTable selecionada
+        String selecionado = tableComboBox.getSelectedItem().toString();
         DAO<?> daoSelecionado = DAO.criar(selecionado, ds);
 
-        // Define um novo modelo de tabela a partir do DAO
+        // Define um novo modelo de mainTable a partir do DAO
         TableModel model = new DAOTableModel(daoSelecionado);
-        tabela.setModel(model);
+        mainTable.setModel(model);
     }
 
     public static void main(String[] args) {
@@ -72,7 +114,8 @@ public class Menu extends JFrame {
             System.err.println("Erro ao definir estilo de janela: " + ex.getMessage());
         }
 
-        // Cria uma nova instancia da janela
-        new Menu();
+        // Cria uma nova instância da janela
+        // Usa essa instância como base para os menus de confirmação
+        JOptionPane.setRootFrame(new Menu());
     }
 }
