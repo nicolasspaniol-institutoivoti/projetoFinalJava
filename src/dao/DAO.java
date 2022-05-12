@@ -17,7 +17,7 @@ public abstract class DAO<T> {
     public abstract ArrayList<T> lerTudo() throws SQLException;
     public abstract void inserir(T obj) throws SQLException;
     public abstract void alterar(Object obj) throws SQLException;
-    public abstract void deletar(int id) throws SQLException;
+    public abstract void deletar(Object obj) throws SQLException;
 
     public abstract Class<?> tipoRegistro();
 

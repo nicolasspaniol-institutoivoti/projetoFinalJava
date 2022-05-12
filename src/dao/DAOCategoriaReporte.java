@@ -43,10 +43,10 @@ public class DAOCategoriaReporte extends DAO<CategoriaReporte> {
             ps.executeUpdate();
         }
     }
-    public void deletar(int codigo) throws SQLException {
+    public void deletar(Object obj) throws SQLException {
         try (PreparedStatement ps = dataSource.preparar(
-                "delete from categoria_reporte where (id_municipio = ?)",
-                String.valueOf(codigo)
+                "delete from categoria_reporte where (id_categoria_reporte = ?)",
+                String.valueOf(((CategoriaReporte) obj).id_categoria_reporte)
         )) {
             ps.executeUpdate();
         }

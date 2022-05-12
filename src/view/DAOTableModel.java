@@ -1,15 +1,11 @@
 package view;
 
 import dao.DAO;
-import dao.DataSource;
-import model.Municipio;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableCellEditor;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Locale;
 
 public class DAOTableModel extends AbstractTableModel {
     DAO<?> daoTabela;
@@ -51,19 +47,27 @@ public class DAOTableModel extends AbstractTableModel {
         }
     }
 
+    public void deleteRows(int startIndex, int endIndex) {
+        for (int i = startIndex; i <= endIndex; i++) {
+            try {
+                Object obj = registros.get(startIndex);
+                registros.remove(startIndex);
+                daoTabela.deletar(obj);
+            }
+            catch (Exception ex) {
+                JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), String.format("Erro ao remover registro (linha %d): " + ex.getMessage(), i));
+            }
+        }
+        fireTableRowsDeleted(startIndex, endIndex);
+        fireTableDataChanged();
+    }
+
     public Class<?> getColumnClass(int col) {
         return daoTabela.tipoRegistro().getDeclaredFields()[col].getType();
     }
 
     public boolean isCellEditable(int row, int col) {
         return col > 0;
-    }
-
-    public void fireTableRowsDeleted(int firstRow, int lastRow) {
-        for (int i = firstRow; i < lastRow; i++) {
-            registros.remove(firstRow);
-        }
-        JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "delete");
     }
 
     public void setValueAt(Object aValue, int row, int col) {

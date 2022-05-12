@@ -12,7 +12,6 @@ import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Locale;
 
 public class Menu extends JFrame {
     private JPanel mainPanel;
@@ -58,7 +57,7 @@ public class Menu extends JFrame {
         });
         deletePopup.add(deleteMenuItem);
         mainTable.setComponentPopupMenu(deletePopup);
-        deleteMenuItem.addActionListener(e -> deleteRow());
+        deleteMenuItem.addActionListener(e -> deleteSelectedRows());
 
         // Inicia a conexao com o BD
         ds = new DataSource();
@@ -76,12 +75,12 @@ public class Menu extends JFrame {
         carregarTabela();
     }
 
-    private void deleteRow() {
+    private void deleteSelectedRows() {
         var selection = mainTable.getSelectionModel(); 
         int confirmation = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(), String.format("Apagar %d registro(s)?", selection.getSelectedItemsCount()), "Confirmar alteração", JOptionPane.YES_NO_OPTION);
         if (confirmation != 0) return;
 
-        mainTable.remove(0);
+        ((DAOTableModel) mainTable.getModel()).deleteRows(selection.getMinSelectionIndex(), selection.getMaxSelectionIndex());
     }
 
     void addRow() {

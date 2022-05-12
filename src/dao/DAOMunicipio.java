@@ -32,7 +32,9 @@ public class DAOMunicipio extends DAO<Municipio> {
                 "insert into municipio (nome, estado) values (?, ?)",
                 m.nome,
                 m.estado.name()
-        )) {}
+        )) {
+            ps.executeUpdate();
+        }
     }
     public void alterar(Object obj) throws SQLException {
         Municipio m = (Municipio) obj;
@@ -43,14 +45,15 @@ public class DAOMunicipio extends DAO<Municipio> {
                 String.valueOf(m.id_municipio)
         )) {
             ps.executeUpdate();
-            ps.close();
         }
     }
-    public void deletar(int codigo) throws SQLException {
+    public void deletar(Object obj) throws SQLException {
         try (PreparedStatement ps = dataSource.preparar(
                 "delete from municipio where (id_municipio = ?)",
-                String.valueOf(codigo)
-        )) {}
+                String.valueOf(((Municipio) obj).id_municipio)
+        )) {
+            ps.executeUpdate();
+        }
     }
 
     public Class<?> tipoRegistro() {
