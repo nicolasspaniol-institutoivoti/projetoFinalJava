@@ -42,7 +42,7 @@ public class Menu extends JFrame {
 
         // Adiciona opção de deletar registro;
         final JPopupMenu deletePopup = new JPopupMenu();
-        JMenuItem deleteMenuItem = new JMenuItem("Apagar registro");
+        JMenuItem deleteMenuItem = new JMenuItem("Apagar registro(s)");
         deletePopup.addPopupMenuListener(new PopupMenuListener() {
             public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
                 SwingUtilities.invokeLater(() -> {
