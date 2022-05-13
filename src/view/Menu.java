@@ -84,7 +84,7 @@ public class Menu extends JFrame {
     }
 
     void addRow() {
-
+        ((DAOTableModel) mainTable.getModel()).addRow();
     }
 
     void prepararTabela() {

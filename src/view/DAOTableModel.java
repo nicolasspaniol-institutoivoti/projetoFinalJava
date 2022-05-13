@@ -85,4 +85,8 @@ public class DAOTableModel extends AbstractTableModel {
             JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), String.format("Erro ao alterar registro (linha %d, coluna \"%s\"): " + ex.getMessage(), row, this.nomeColunas[col]));
         }
     }
+
+    public void addRow() {
+        JOptionPane.showMessageDialog(null, "add");
+    }
 }
