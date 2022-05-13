@@ -18,8 +18,9 @@ public class Menu extends JFrame {
     private JTable mainTable;
     private JComboBox<String> tableComboBox;
     private JButton addButton;
+    private JButton refreshButton;
 
-    private DataSource ds;
+    private final DataSource ds;
 
     public Menu() {
         // Inicializa a janela
@@ -36,6 +37,8 @@ public class Menu extends JFrame {
 
         // Quando o botão de adicionar for clicado, cria uma nova linha na tabela
         addButton.addActionListener(e -> addRow());
+
+        refreshButton.addActionListener(e -> carregarTabela());
 
         // Adiciona opção de deletar registro;
         final JPopupMenu deletePopup = new JPopupMenu();
@@ -88,9 +91,9 @@ public class Menu extends JFrame {
     }
 
     void prepararTabela() {
-        mainTable.setDefaultEditor(Estado.class, new DefaultCellEditor(new JComboBox(Estado.values())));
+        mainTable.setDefaultEditor(Estado.class, new DefaultCellEditor(new JComboBox<>(Estado.values())));
 
-        var tipofornCB = new JComboBox(new Boolean[] {true, false});
+        var tipofornCB = new JComboBox<>(new Boolean[] {true, false});
         mainTable.setDefaultEditor(TipoFornecedor.class, new DefaultCellEditor(tipofornCB));
     }
 
