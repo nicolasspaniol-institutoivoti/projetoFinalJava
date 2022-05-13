@@ -10,8 +10,7 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.table.TableModel;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 
 public class Menu extends JFrame {
     private JPanel mainPanel;
@@ -38,23 +37,21 @@ public class Menu extends JFrame {
         // Quando o botão de adicionar for clicado, cria uma nova linha na tabela
         addButton.addActionListener(e -> addRow());
 
+        // Recarrega a tabela quando o botão de recarregar for clicado
         refreshButton.addActionListener(e -> carregarTabela());
 
         // Adiciona opção de deletar registro;
         final JPopupMenu deletePopup = new JPopupMenu();
         JMenuItem deleteMenuItem = new JMenuItem("Apagar registro");
         deletePopup.addPopupMenuListener(new PopupMenuListener() {
-            @Override
             public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-                if (mainTable.getSelectionModel().getSelectedItemsCount() > 0) return;
                 SwingUtilities.invokeLater(() -> {
                     int rowAtPoint = mainTable.rowAtPoint(SwingUtilities.convertPoint(deletePopup, new Point(0, 0), mainTable));
-                    if (rowAtPoint > -1) {
+                    if (rowAtPoint > -1 && !mainTable.getSelectionModel().isSelectedIndex(rowAtPoint)) {
                         mainTable.setRowSelectionInterval(rowAtPoint, rowAtPoint);
                     }
                 });
             }
-
             public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {}
             public void popupMenuCanceled(PopupMenuEvent e) {}
         });
@@ -95,6 +92,16 @@ public class Menu extends JFrame {
 
         var tipofornCB = new JComboBox<>(new Boolean[] {true, false});
         mainTable.setDefaultEditor(TipoFornecedor.class, new DefaultCellEditor(tipofornCB));
+
+        mainTable.getTableHeader().setReorderingAllowed(false);
+
+        mainTable.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_DELETE) {
+                    deleteSelectedRows();
+                }
+            }
+        });
     }
 
     void carregarTabela() {
