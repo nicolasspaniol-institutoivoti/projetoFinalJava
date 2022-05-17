@@ -1,5 +1,6 @@
 package dao;
 
+import model.CategoriaReporte;
 import model.Municipio;
 import util.Estado;
 
@@ -27,7 +28,8 @@ public class DAOMunicipio extends DAO<Municipio> {
             return lista;
         }
     }
-    public void inserir(Municipio m) throws SQLException {
+    public void inserir(Object obj) throws SQLException {
+        Municipio m = (Municipio) obj;
         try (PreparedStatement ps = dataSource.preparar(
                 "insert into municipio (nome, estado) values (?, ?)",
                 m.nome,

@@ -25,7 +25,8 @@ public class DAOCategoriaReporte extends DAO<CategoriaReporte> {
             return lista;
         }
     }
-    public void inserir(CategoriaReporte cr) throws SQLException {
+    public void inserir(Object obj) throws SQLException {
+        CategoriaReporte cr = (CategoriaReporte) obj;
         try (PreparedStatement ps = dataSource.preparar(
                 "insert into categoria_reporte (descricao) values (?)",
                 cr.descricao

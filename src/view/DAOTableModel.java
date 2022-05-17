@@ -2,6 +2,7 @@ package view;
 
 import dao.DAO;
 
+import javax.lang.model.type.NullType;
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.sql.SQLException;
@@ -47,18 +48,18 @@ public class DAOTableModel extends AbstractTableModel {
         }
     }
 
-    public void deleteRows(int startIndex, int endIndex) {
-        for (int i = startIndex; i <= endIndex; i++) {
+    public void removerRegistros(int indiceInicial, int indiceFinal) {
+        for (int i = indiceInicial; i <= indiceFinal; i++) {
             try {
-                Object obj = registros.get(startIndex);
-                registros.remove(startIndex);
+                Object obj = registros.get(indiceInicial);
+                registros.remove(indiceInicial);
                 daoTabela.deletar(obj);
             }
             catch (Exception ex) {
                 JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), String.format("Erro ao remover registro (linha %d): " + ex.getMessage(), i));
             }
         }
-        fireTableRowsDeleted(startIndex, endIndex);
+        fireTableRowsDeleted(indiceInicial, indiceFinal);
         fireTableDataChanged();
     }
 
@@ -86,7 +87,21 @@ public class DAOTableModel extends AbstractTableModel {
         }
     }
 
-    public void addRow() {
-        JOptionPane.showMessageDialog(null, "add");
+    public void adicionarRegistro() {
+        int confirmacao = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(), "Adicionar novo registro na tabela?", "Confirmar inserção", JOptionPane.YES_NO_OPTION);
+        if (confirmacao != 0) return;
+
+        try {
+            Object registro = daoTabela.tipoRegistro().getConstructor((Class<?>) null).newInstance();
+            daoTabela.inserir(registro);
+            registros.add(registro);
+
+            int indice = registros.size() - 1;
+            fireTableRowsInserted(indice, indice);
+            fireTableDataChanged();
+        }
+        catch (Exception ex) {
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Erro ao adicionar registro: " + ex.getMessage());
+        }
     }
 }

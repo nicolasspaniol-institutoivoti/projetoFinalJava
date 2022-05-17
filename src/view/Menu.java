@@ -4,7 +4,6 @@ import dao.DAO;
 import dao.DAOCategoriaReporte;
 import dao.DAOMunicipio;
 import dao.DataSource;
-import model.Municipio;
 import util.Estado;
 
 import javax.swing.*;
@@ -16,7 +15,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -54,18 +52,18 @@ public class Menu extends JFrame {
         mapaDAOs.put("Municípios", DAOMunicipio.class);
         mapaDAOs.put("Categorias de reporte", DAOCategoriaReporte.class);
 
-        // Define as opcoes da combobox de selecao da tabela
+        // Define as opções da ComboBox de seleção da tabela
         comboBoxTabelas.setModel(new DefaultComboBoxModel<>());
         for (String key : mapaDAOs.keySet()) {
             comboBoxTabelas.addItem(key);
         }
 
-        // Quando a selecao for alterada, carrega a mainTable novamente
+        // Recarrega a tabela quando a selecao for alterada
         comboBoxTabelas.addActionListener(e -> carregarTabela());
         // Recarrega a tabela quando o botão de recarregar for clicado
         botaoRecarregar.addActionListener(e -> carregarTabela());
 
-        // Quando o botão de adicionar for clicado, cria uma nova linha na tabela
+        // Cria uma nova linha na tabela quando o botão de adicionar for clicado
         botaoAdicionar.addActionListener(e -> adicionarLinha());
 
         // Inicializa a tabela com o DAO selecionado na tabelaComboBox
@@ -76,17 +74,21 @@ public class Menu extends JFrame {
     private void removerLinhasSelecionadas() {
         // Armazena as linhas selecionadas
         var selection = tabela.getSelectionModel();
+
         // Pede ao usuário que confirme a ação, caso contrário a cancela
-        int confirmation = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(), String.format("Apagar %d registro(s)?", selection.getSelectedItemsCount()), "Confirmar alteração", JOptionPane.YES_NO_OPTION);
+        int confirmation = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(), String.format("Apagar %d registro(s)?", selection.getSelectedItemsCount()), "Confirmar remoção", JOptionPane.YES_NO_OPTION);
         if (confirmation != 0) return;
 
         // Deleta as linhas armazenadas
-        ((DAOTableModel) tabela.getModel()).deleteRows(selection.getMinSelectionIndex(), selection.getMaxSelectionIndex());
+        ((DAOTableModel) tabela.getModel()).removerRegistros(selection.getMinSelectionIndex(), selection.getMaxSelectionIndex());
     }
 
     void adicionarLinha() {
-        // TODO
-        ((DAOTableModel) tabela.getModel()).addRow();
+        // Adiciona o registro
+        ((DAOTableModel) tabela.getModel()).adicionarRegistro();
+
+        // Recarrega a tabela para atualizar os IDs
+        carregarTabela();
     }
 
     void prepararDeletarLinhas() {
