@@ -150,10 +150,12 @@ public class Menu extends JFrame {
             TableModel model = new DAOTableModel(daoSelecionado);
             tabela.setModel(model);
 
+            // Identifica o tamanho das colunas dessa tabela
             Integer[] larguraColunas = daoSelecionado.largurasColunas();
             for (int i = 0; i < larguraColunas.length; i++) {
                 int largura = larguraColunas[i];
 
+                // Se o tamanho for válido, o aplica na coluna
                 if (largura >= 0) {
                     tabela.getColumnModel().getColumn(i).setMinWidth(largura);
                     tabela.getColumnModel().getColumn(i).setMaxWidth(largura);

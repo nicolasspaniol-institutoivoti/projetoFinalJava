@@ -25,19 +25,27 @@ public abstract class DAO<T> {
     public abstract Class<?> tipoRegistro();
 
     private void identificarColunas() {
+        // Identifica os campos dos registros dessa tabela
         Field[] campos = tipoRegistro().getDeclaredFields();
+        // Cria uma mapa para armazenar os nomes e tamanhos das colunas
         colunas = new LinkedHashMap<>();
 
+        // Analiza cada campo da classe
         for (Field campo : campos) {
+            // Verifica se o campo possui a anotação CampoSQL
             CampoSQL an = campo.getAnnotation(CampoSQL.class);
             if (an != null) {
+                // Armazena os valores de largura e nome da coluna na anotação
                 String nome = an.nomeColuna();
                 int largura = an.larguraColuna();
 
+                // Se o nome da coluna não está anotado, usa o nome do próprio campo (com a primeira letra maiúscula)
                 if (Objects.equals(nome, "")) {
                     nome = campo.getName();
                     nome = nome.substring(0, 1).toUpperCase() + nome.substring(1);
                 }
+
+                // Armazena esses valores no mapa
                 colunas.put(nome, largura);
             }
         }
