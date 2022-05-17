@@ -14,7 +14,7 @@ public class DAOTableModel extends AbstractTableModel {
 
     public DAOTableModel(DAO<?> daoTabela) {
         this.daoTabela = daoTabela;
-        this.nomeColunas = daoTabela.colunas();
+        this.nomeColunas = daoTabela.nomesColunas();
 
         try {
             registros = (ArrayList<Object>) daoTabela.lerTudo();

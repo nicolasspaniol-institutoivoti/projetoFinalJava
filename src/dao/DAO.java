@@ -5,13 +5,16 @@ import model.CampoSQL;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.Objects;
 
 public abstract class DAO<T> {
     public DataSource dataSource;
+    LinkedHashMap<String, Integer> colunas;
 
      public DAO(DataSource ds) {
         this.dataSource = ds;
+        identificarColunas();
     }
 
     public abstract ArrayList<T> lerTudo() throws SQLException;
@@ -21,30 +24,29 @@ public abstract class DAO<T> {
 
     public abstract Class<?> tipoRegistro();
 
-    public final String[] colunas() {
+    private void identificarColunas() {
         Field[] campos = tipoRegistro().getDeclaredFields();
-        String[] cols = new String[campos.length];
+        colunas = new LinkedHashMap<>();
 
-        for (int i = 0; i < campos.length; i++) {
-            Field campo = campos[i];
+        for (Field campo : campos) {
             CampoSQL an = campo.getAnnotation(CampoSQL.class);
-            String col = an == null? "" : an.nomeColuna();
-            if (Objects.equals(col, "")) {
-                col = campo.getName();
-                col = col.substring(0, 1).toUpperCase() + col.substring(1);
-            }
-            cols[i] = col;
-        }
+            if (an != null) {
+                String nome = an.nomeColuna();
+                int largura = an.larguraColuna();
 
-        return cols;
+                if (Objects.equals(nome, "")) {
+                    nome = campo.getName();
+                    nome = nome.substring(0, 1).toUpperCase() + nome.substring(1);
+                }
+                colunas.put(nome, largura);
+            }
+        }
     }
 
-    public static String[] tabelas = new String[] {"Municipio", "Categoria de reporte"};
-    public static DAO<?> criar(String tabela, DataSource ds) {
-        return switch (tabela) {
-            case "Municipio" -> new DAOMunicipio(ds);
-            case "Categoria de reporte" -> new DAOCategoriaReporte(ds);
-            default -> throw new IllegalArgumentException("Nome de tabela invalido.");
-        };
+    public final String[] nomesColunas() {
+        return colunas.keySet().toArray(new String[0]);
+    }
+    public final Integer[] largurasColunas() {
+        return colunas.values().toArray(new Integer[0]);
     }
 }

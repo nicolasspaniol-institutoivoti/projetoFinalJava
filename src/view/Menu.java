@@ -1,63 +1,42 @@
 package view;
 
 import dao.DAO;
+import dao.DAOCategoriaReporte;
+import dao.DAOMunicipio;
 import dao.DataSource;
+import model.Municipio;
 import util.Estado;
-import util.TipoFornecedor;
 
 import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.table.TableModel;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Objects;
 
 public class Menu extends JFrame {
-    private JPanel mainPanel;
-    private JTable mainTable;
-    private JComboBox<String> tableComboBox;
-    private JButton addButton;
-    private JButton refreshButton;
+    private JPanel painel;
+    private JTable tabela;
+    private JComboBox<String> comboBoxTabelas;
+    private JButton botaoAdicionar;
+    private JButton botaoRecarregar;
 
     private final DataSource ds;
+    private final HashMap<String, Class<? extends DAO<?>>> mapaDAOs;
 
     public Menu() {
         // Inicializa a janela
-        setContentPane(mainPanel);
+        setContentPane(painel);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         pack();
         setTitle("Painel do administrador");
         setVisible(true);
-
-        // Define as opcoes da combobox de selecao de mainTable
-        tableComboBox.setModel(new DefaultComboBoxModel<>(DAO.tabelas));
-        // Quando a selecao for alterada, carrega a mainTable novamente
-        tableComboBox.addActionListener(e -> carregarTabela());
-
-        // Quando o botão de adicionar for clicado, cria uma nova linha na tabela
-        addButton.addActionListener(e -> addRow());
-
-        // Recarrega a tabela quando o botão de recarregar for clicado
-        refreshButton.addActionListener(e -> carregarTabela());
-
-        // Adiciona opção de deletar registro;
-        final JPopupMenu deletePopup = new JPopupMenu();
-        JMenuItem deleteMenuItem = new JMenuItem("Apagar registro(s)");
-        deletePopup.addPopupMenuListener(new PopupMenuListener() {
-            public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-                SwingUtilities.invokeLater(() -> {
-                    int rowAtPoint = mainTable.rowAtPoint(SwingUtilities.convertPoint(deletePopup, new Point(0, 0), mainTable));
-                    if (rowAtPoint > -1 && !mainTable.getSelectionModel().isSelectedIndex(rowAtPoint)) {
-                        mainTable.setRowSelectionInterval(rowAtPoint, rowAtPoint);
-                    }
-                });
-            }
-            public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {}
-            public void popupMenuCanceled(PopupMenuEvent e) {}
-        });
-        deletePopup.add(deleteMenuItem);
-        mainTable.setComponentPopupMenu(deletePopup);
-        deleteMenuItem.addActionListener(e -> deleteSelectedRows());
 
         // Inicia a conexao com o BD
         ds = new DataSource();
@@ -70,52 +49,122 @@ public class Menu extends JFrame {
             }
         });
 
-        // Inicializa a JTable com os valores da mainTable selecionada
+        // Cria os DAOs e os armazena em um mapa
+        mapaDAOs = new HashMap<>();
+        mapaDAOs.put("Municípios", DAOMunicipio.class);
+        mapaDAOs.put("Categorias de reporte", DAOCategoriaReporte.class);
+
+        // Define as opcoes da combobox de selecao da tabela
+        comboBoxTabelas.setModel(new DefaultComboBoxModel<>());
+        for (String key : mapaDAOs.keySet()) {
+            comboBoxTabelas.addItem(key);
+        }
+
+        // Quando a selecao for alterada, carrega a mainTable novamente
+        comboBoxTabelas.addActionListener(e -> carregarTabela());
+        // Recarrega a tabela quando o botão de recarregar for clicado
+        botaoRecarregar.addActionListener(e -> carregarTabela());
+
+        // Quando o botão de adicionar for clicado, cria uma nova linha na tabela
+        botaoAdicionar.addActionListener(e -> adicionarLinha());
+
+        // Inicializa a tabela com o DAO selecionado na tabelaComboBox
         prepararTabela();
         carregarTabela();
     }
 
-    private void deleteSelectedRows() {
-        var selection = mainTable.getSelectionModel(); 
+    private void removerLinhasSelecionadas() {
+        // Armazena as linhas selecionadas
+        var selection = tabela.getSelectionModel();
+        // Pede ao usuário que confirme a ação, caso contrário a cancela
         int confirmation = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(), String.format("Apagar %d registro(s)?", selection.getSelectedItemsCount()), "Confirmar alteração", JOptionPane.YES_NO_OPTION);
         if (confirmation != 0) return;
 
-        ((DAOTableModel) mainTable.getModel()).deleteRows(selection.getMinSelectionIndex(), selection.getMaxSelectionIndex());
+        // Deleta as linhas armazenadas
+        ((DAOTableModel) tabela.getModel()).deleteRows(selection.getMinSelectionIndex(), selection.getMaxSelectionIndex());
     }
 
-    void addRow() {
-        ((DAOTableModel) mainTable.getModel()).addRow();
+    void adicionarLinha() {
+        // TODO
+        ((DAOTableModel) tabela.getModel()).addRow();
     }
 
-    void prepararTabela() {
-        mainTable.setDefaultEditor(Estado.class, new DefaultCellEditor(new JComboBox<>(Estado.values())));
+    void prepararDeletarLinhas() {
+        // Cria um popup na tabela com a opção de apagar registros
+        final JPopupMenu popupDeletar = new JPopupMenu();
+        tabela.setComponentPopupMenu(popupDeletar);
+        JMenuItem itemMenuDeletar = new JMenuItem("Apagar registro(s)");
+        popupDeletar.add(itemMenuDeletar);
 
-        var tipofornCB = new JComboBox<>(new Boolean[] {true, false});
-        mainTable.setDefaultEditor(TipoFornecedor.class, new DefaultCellEditor(tipofornCB));
+        // Quando o botão direito for clicado, garante que a linha em que o cursor está vai estar selecionada
+        popupDeletar.addPopupMenuListener(new PopupMenuListener() {
+            public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+                SwingUtilities.invokeLater(() -> {
+                    // Descobre a linha em que o cursor está
+                    int rowAtPoint = tabela.rowAtPoint(SwingUtilities.convertPoint(popupDeletar, new Point(0, 0), tabela));
 
-        mainTable.getTableHeader().setReorderingAllowed(false);
+                    // Se a linha não fizer parte da seleção atual, seleciona apenas ela
+                    if (rowAtPoint > -1 && !tabela.getSelectionModel().isSelectedIndex(rowAtPoint)) {
+                        tabela.setRowSelectionInterval(rowAtPoint, rowAtPoint);
+                    }
+                });
+            }
+            // Ignorados
+            public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {}
+            public void popupMenuCanceled(PopupMenuEvent e) {}
+        });
 
-        mainTable.addKeyListener(new KeyAdapter() {
+        // Remove as linhas selecionadas quando a opção de apagar registros for clicada
+        itemMenuDeletar.addActionListener(e -> removerLinhasSelecionadas());
+
+        // Faz o mesmo quando a tecla "delete" for pressionada
+        tabela.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_DELETE) {
-                    deleteSelectedRows();
+                    removerLinhasSelecionadas();
                 }
             }
         });
     }
 
-    void carregarTabela() {
-        // Cria um DAO da mainTable selecionada
-        String selecionado = tableComboBox.getSelectedItem().toString();
-        DAO<?> daoSelecionado = DAO.criar(selecionado, ds);
+    void prepararTabela() {
+        // Adiciona a funcionalidade de deletar linhas da tabela
+        prepararDeletarLinhas();
 
-        // Define um novo modelo de mainTable a partir do DAO
-        TableModel model = new DAOTableModel(daoSelecionado);
-        mainTable.setModel(model);
+        // Define os editores das células para algumas classes especiais
+        tabela.setDefaultEditor(Estado.class, new DefaultCellEditor(new JComboBox<>(Estado.values())));
+
+        // Impede que as colunas sejam reordenadas
+        tabela.getTableHeader().setReorderingAllowed(false);
+    }
+
+    void carregarTabela() {
+        try {
+            // Cria um DAO para a tabela selecionada na tabelaComboBox
+            String selecionado = Objects.requireNonNull(comboBoxTabelas.getSelectedItem()).toString();
+            DAO<?> daoSelecionado = mapaDAOs.get(selecionado).getConstructor(DataSource.class).newInstance(ds);
+
+            // Define um novo TabelModel a partir desse DAO
+            TableModel model = new DAOTableModel(daoSelecionado);
+            tabela.setModel(model);
+
+            Integer[] larguraColunas = daoSelecionado.largurasColunas();
+            for (int i = 0; i < larguraColunas.length; i++) {
+                int largura = larguraColunas[i];
+
+                if (largura >= 0) {
+                    tabela.getColumnModel().getColumn(i).setMinWidth(largura);
+                    tabela.getColumnModel().getColumn(i).setMaxWidth(largura);
+                }
+            }
+        }
+        catch (Exception ex) {
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Erro ao carregar tabela");
+        }
     }
 
     public static void main(String[] args) {
-        // Deixa a janela com o visual padrao do Windows
+        // Deixa a janela com o visual padrão do Windows
         try {
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
         }
@@ -124,7 +173,7 @@ public class Menu extends JFrame {
         }
 
         // Cria uma nova instância da janela
-        // Usa essa instância como base para os menus de confirmação
+        // Usa essa instância como base para os menus do JOptionPane
         JOptionPane.setRootFrame(new Menu());
     }
 }
