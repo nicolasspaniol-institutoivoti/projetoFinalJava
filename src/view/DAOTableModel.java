@@ -114,7 +114,7 @@ public class DAOTableModel extends AbstractTableModel {
 
         try {
             // Cria um novo objeto da classe envolta pelo DAO
-            Object registro = daoTabela.tipoRegistro().getConstructor((Class<?>) null).newInstance();
+            Object registro = daoTabela.tipoRegistro().getConstructor(null).newInstance();
             // Insere esse objeto no banco de dados
             daoTabela.inserir(registro);
             registros.add(registro);
