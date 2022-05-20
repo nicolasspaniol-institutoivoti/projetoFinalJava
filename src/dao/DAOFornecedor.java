@@ -1,8 +1,8 @@
-/*
 package dao;
 
-import model.CategoriaReporte;
 import model.Fornecedor;
+import model.Fornecedor;
+import util.TipoFornecedor;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,42 +15,89 @@ public class DAOFornecedor extends DAO<Fornecedor> {
     }
 
     public Fornecedor lerRegistro(ResultSet rs) throws SQLException {
-        return new Fornecedor(
-                rs.getInt("id_fornecedor"),
-                rs.getBoolean("tipo"),
-                rs.getBoolean("ativo"),
-                rs.getString("nome"),
-                rs.getString()
-        );
+        Fornecedor f = new Fornecedor();
+        f.id_fornecedor = rs.getInt("id_fornecedor");
+        f.cep = rs.getInt("cep");
+        f.ativo = rs.getBoolean("ativo");
+        f.bairro = rs.getString("bairro");
+        f.complemento = rs.getString("complemento");
+        f.coordenadas = rs.getString("coordenadas");
+        f.logo = rs.getString("logo");
+        f.cnp = rs.getString("cnp");
+        f.email = rs.getString("email");
+        f.numero = rs.getShort("numero");
+        f.rua = rs.getString("rua");
+        f.senha = rs.getString("senha");
+        f.id_municipio = rs.getInt("id_municipio");
+        f.tipo = TipoFornecedor.values()[rs.getInt("tipo")];
+        f.telefone = rs.getString("telefone");
+        f.nome = rs.getString("nome");
+        return f;
     }
     public ArrayList<Fornecedor> lerTudo() throws SQLException {
-        try (PreparedStatement ps = dataSource.preparar("select * from categoria_reporte"); ResultSet rs = ps.executeQuery()) {
+        try (PreparedStatement ps = dataSource.preparar("select * from fornecedor"); ResultSet rs = ps.executeQuery()) {
             ArrayList<Fornecedor> lista = new ArrayList<>();
             while (rs.next()) lista.add(lerRegistro(rs));
             return lista;
         }
     }
-    public void inserir(CategoriaReporte cr) throws SQLException {
+    public void inserir(Object obj) throws SQLException {
+        Fornecedor f = (Fornecedor) obj;
         try (PreparedStatement ps = dataSource.preparar(
-                "insert into categoria_reporte (descricao) values (?)",
-                cr.descricao()
-        )) {}
+                "insert into fornecedor (cep, ativo, bairro, complemento, coordenadas, logo, cnp, email, numero, rua, senha, id_municipio, tipo, telefone, nome) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                String.valueOf(f.cep),
+                f.ativo ? "1" : "0",
+                f.bairro,
+                f.complemento,
+                f.coordenadas,
+                f.logo,
+                f.cnp,
+                f.email,
+                String.valueOf(f.numero),
+                f.rua,
+                f.senha,
+                String.valueOf(f.id_municipio),
+                f.tipo == TipoFornecedor.Brechó ? "1" : "0",
+                f.telefone,
+                f.nome
+        )) {
+            ps.executeUpdate();
+        }
     }
-    public void alterar(CategoriaReporte cr) throws SQLException {
+    public void alterar(Object obj) throws SQLException {
+        Fornecedor f = (Fornecedor) obj;
         try (PreparedStatement ps = dataSource.preparar(
-                "update categoria_reporte set descricao=? where id_categoria_reporte=?",
-                cr.descricao(),
-                String.valueOf(cr.idCategoriaReporte())
-        )) {}
+                "update fornecedor set cep=?, ativo=?, bairro=?, complemento=?, coordenadas=?, logo=?, cnp=?, email=?, numero=?, rua=?, senha=?, id_municipio=?, tipo=?, telefone=?, nome=? where id_fornecedor=?",
+                String.valueOf(f.cep),
+                f.ativo ? "1" : "0",
+                f.bairro,
+                f.complemento,
+                f.coordenadas,
+                f.logo,
+                f.cnp,
+                f.email,
+                String.valueOf(f.numero),
+                f.rua,
+                f.senha,
+                String.valueOf(f.id_municipio),
+                f.tipo == TipoFornecedor.Brechó ? "1" : "0",
+                f.telefone,
+                f.nome,
+                String.valueOf(f.id_fornecedor)
+        )) {
+            ps.executeUpdate();
+        }
     }
-    public void deletar(int codigo) throws SQLException {
+    public void deletar(Object obj) throws SQLException {
         try (PreparedStatement ps = dataSource.preparar(
-                "delete from categoria_reporte where (id_municipio = ?)",
-                String.valueOf(codigo)
-        )) {}
+                "delete from fornecedor where (id_fornecedor = ?)",
+                String.valueOf(((Fornecedor) obj).id_fornecedor)
+        )) {
+            ps.executeUpdate();
+        }
     }
 
     public Class<?> tipoRegistro() {
         return Fornecedor.class;
     }
-}*/
+}

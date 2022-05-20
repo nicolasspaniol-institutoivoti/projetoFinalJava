@@ -1,21 +1,24 @@
 package view;
 
-import dao.DAO;
-import dao.DAOCategoriaReporte;
-import dao.DAOMunicipio;
-import dao.DataSource;
-import util.Estado;
+import dao.*;
+import util.*;
 
 import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.table.TableModel;
+import javax.swing.text.NumberFormatter;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.sql.Date;
+import java.util.EventObject;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Objects;
 
 public class Menu extends JFrame {
@@ -50,7 +53,11 @@ public class Menu extends JFrame {
         // Cria os DAOs e os armazena em um mapa
         mapaDAOs = new HashMap<>();
         mapaDAOs.put("Municípios", DAOMunicipio.class);
-        mapaDAOs.put("Categorias de reporte", DAOCategoriaReporte.class);
+        mapaDAOs.put("Categorias dos reportes", DAOCategoriaReporte.class);
+        mapaDAOs.put("Categorias das peças", DAOCategoriaPeca.class);
+        mapaDAOs.put("Imagens das peças", DAOImagemPeca.class);
+        mapaDAOs.put("Reservas", DAOReserva.class);
+        mapaDAOs.put("Fornecedores", DAOFornecedor.class);
 
         // Define as opções da ComboBox de seleção da tabela
         comboBoxTabelas.setModel(new DefaultComboBoxModel<>());
@@ -135,6 +142,11 @@ public class Menu extends JFrame {
 
         // Define os editores das células para algumas classes especiais
         tabela.setDefaultEditor(Estado.class, new DefaultCellEditor(new JComboBox<>(Estado.values())));
+        tabela.setDefaultEditor(TipoFornecedor.class, new DefaultCellEditor(new JComboBox<>(TipoFornecedor.values())));
+        tabela.setDefaultEditor(Date.class, new DataCellEditor());
+        tabela.setDefaultEditor(boolean.class, new DefaultCellEditor(new JCheckBox()));
+        tabela.setDefaultEditor(int.class, new IntCellEditor(0, Integer.MAX_VALUE));
+        tabela.setDefaultEditor(short.class, new ShortCellEditor(0, Short.MAX_VALUE));
 
         // Impede que as colunas sejam reordenadas
         tabela.getTableHeader().setReorderingAllowed(false);
@@ -157,8 +169,9 @@ public class Menu extends JFrame {
 
                 // Se o tamanho for válido, o aplica na coluna
                 if (largura >= 0) {
-                    tabela.getColumnModel().getColumn(i).setMinWidth(largura);
-                    tabela.getColumnModel().getColumn(i).setMaxWidth(largura);
+                    var coluna = tabela.getColumnModel().getColumn(i);
+                    coluna.setMinWidth(largura);
+                    coluna.setMaxWidth(largura);
                 }
             }
         }

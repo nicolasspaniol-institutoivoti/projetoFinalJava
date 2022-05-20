@@ -2,7 +2,6 @@ package view;
 
 import dao.DAO;
 
-import javax.lang.model.type.NullType;
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.sql.SQLException;
@@ -84,26 +83,38 @@ public class DAOTableModel extends AbstractTableModel {
 
     public void setValueAt(Object novoValor, int linha, int col) {
         // Retorna caso o valor não tenha sido alterado
-        if (novoValor.equals(getValueAt(linha, col))) return;
+        Object valorAnterior = getValueAt(linha, col);
+        if (novoValor.equals(valorAnterior)) return;
 
         // Pede a confirmação do usuário, caso contrário cancela a alteração
         int confirmation = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(), "Atualizar registro da tabela?", "Confirmar alteração", JOptionPane.YES_NO_OPTION);
         if (confirmation != 0) return;
 
+        if (alterarCelula(linha, col, novoValor)) {
+            fireTableCellUpdated(linha, col);
+            fireTableDataChanged();
+        }
+        else {
+            alterarCelula(linha, col, valorAnterior);
+        }
+    }
+
+    public boolean alterarCelula(int linha, int col, Object valor) {
         try {
             // Armazena o registro a ser alterado
             var obj = registros.get(linha);
-            // Altera o valor desse registro armazenado
-            obj.getClass().getDeclaredFields()[col].set(obj, novoValor);
+            // Altera o valor da coluna nesse registro armazenado
+            var coluna = obj.getClass().getDeclaredFields()[col];
+            coluna.set(obj, valor);
             // Envia o objeto alterado ao banco de dados
             daoTabela.alterar(obj);
             registros.set(linha, obj);
 
-            // Reporta à interface que uma célula foi alterada
-            fireTableCellUpdated(linha, col);
-            fireTableDataChanged();
-        } catch (Exception ex) {
+            return true;
+        }
+        catch (Exception ex) {
             JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), String.format("Erro ao alterar registro (linha %d, coluna \"%s\"): " + ex.getMessage(), linha, this.nomeColunas[col]));
+            return false;
         }
     }
 
