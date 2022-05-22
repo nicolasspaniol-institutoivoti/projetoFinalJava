@@ -124,16 +124,18 @@ public class DAOTableModel extends AbstractTableModel {
         if (confirmacao != 0) return;
 
         try {
-            // Cria um novo objeto da classe envolta pelo DAO
-            Object registro = daoTabela.tipoRegistro().getConstructor(null).newInstance();
-            // Insere esse objeto no banco de dados
-            daoTabela.inserir(registro);
-            registros.add(registro);
+            // Insere um novo objeto no banco de dados e o armazena
+            Object registro = daoTabela.inserir();
+            // Verifica se a inserção funcionou
+            if (registro != null) {
+                // Adiciona o registro na tabela local
+                registros.add(registro);
 
-            // Reporta à interface que um item foi adicionado
-            int indice = registros.size() - 1;
-            fireTableRowsInserted(indice, indice);
-            fireTableDataChanged();
+                // Reporta à interface que um item foi adicionado
+                int indice = registros.size() - 1;
+                fireTableRowsInserted(indice, indice);
+                fireTableDataChanged();
+            }
         }
         catch (Exception ex) {
             JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Erro ao adicionar registro: " + ex.getMessage());

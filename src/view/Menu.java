@@ -7,18 +7,13 @@ import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.table.TableModel;
-import javax.swing.text.NumberFormatter;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.sql.Date;
-import java.util.EventObject;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Objects;
 
 public class Menu extends JFrame {
@@ -58,6 +53,7 @@ public class Menu extends JFrame {
         mapaDAOs.put("Imagens das peças", DAOImagemPeca.class);
         mapaDAOs.put("Reservas", DAOReserva.class);
         mapaDAOs.put("Fornecedores", DAOFornecedor.class);
+        mapaDAOs.put("Pontos de coleta", DAOPontoColeta.class);
 
         // Define as opções da ComboBox de seleção da tabela
         comboBoxTabelas.setModel(new DefaultComboBoxModel<>());
@@ -94,7 +90,7 @@ public class Menu extends JFrame {
         // Adiciona o registro
         ((DAOTableModel) tabela.getModel()).adicionarRegistro();
 
-        // Recarrega a tabela para atualizar os IDs
+        // Recarrega a tabela para atualizar o ID
         carregarTabela();
     }
 

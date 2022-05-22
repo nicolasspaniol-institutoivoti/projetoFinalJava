@@ -3,6 +3,7 @@ package dao;
 import model.CampoSQL;
 
 import java.lang.reflect.Field;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -18,7 +19,7 @@ public abstract class DAO<T> {
     }
 
     public abstract ArrayList<T> lerTudo() throws SQLException;
-    public abstract void inserir(Object obj) throws SQLException;
+    public abstract Object inserir() throws SQLException;
     public abstract void alterar(Object obj) throws SQLException;
     public abstract void deletar(Object obj) throws SQLException;
 
@@ -48,6 +49,18 @@ public abstract class DAO<T> {
                 // Armazena esses valores no mapa
                 colunas.put(nome, largura);
             }
+        }
+    }
+
+    protected int lerPrimeiroId(String tabela) throws SQLException {
+        String campoId = "id_" + tabela;
+
+        try (
+                var ps = dataSource.preparar(String.format("select %s from %s limit 1", campoId, tabela));
+                ResultSet rs = ps.executeQuery()
+        ) {
+            rs.next();
+            return rs.getInt(campoId);
         }
     }
 

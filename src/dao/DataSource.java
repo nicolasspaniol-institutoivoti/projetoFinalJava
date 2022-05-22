@@ -1,6 +1,9 @@
 package dao;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public class DataSource {
     private Connection conexao;
@@ -37,7 +40,7 @@ public class DataSource {
 
     // Encurta o processo de criar um PreparedStatement e de substituir seus valores
     public PreparedStatement preparar(String SQL, String... valores) throws SQLException {
-        PreparedStatement ps = conexao.prepareStatement(SQL);
+        var ps = conexao.prepareStatement(SQL);
 
         for (int i = 0; i < valores.length; i++) {
             ps.setString(i + 1, valores[i]);

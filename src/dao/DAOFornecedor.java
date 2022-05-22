@@ -1,10 +1,8 @@
 package dao;
 
 import model.Fornecedor;
-import model.Fornecedor;
 import util.TipoFornecedor;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -16,6 +14,7 @@ public class DAOFornecedor extends DAO<Fornecedor> {
 
     public Fornecedor lerRegistro(ResultSet rs) throws SQLException {
         Fornecedor f = new Fornecedor();
+
         f.id_fornecedor = rs.getInt("id_fornecedor");
         f.cep = rs.getInt("cep");
         f.ativo = rs.getBoolean("ativo");
@@ -32,18 +31,21 @@ public class DAOFornecedor extends DAO<Fornecedor> {
         f.tipo = TipoFornecedor.values()[rs.getInt("tipo")];
         f.telefone = rs.getString("telefone");
         f.nome = rs.getString("nome");
+
         return f;
     }
     public ArrayList<Fornecedor> lerTudo() throws SQLException {
-        try (PreparedStatement ps = dataSource.preparar("select * from fornecedor"); ResultSet rs = ps.executeQuery()) {
+        try (var ps = dataSource.preparar("select * from fornecedor"); ResultSet rs = ps.executeQuery()) {
             ArrayList<Fornecedor> lista = new ArrayList<>();
             while (rs.next()) lista.add(lerRegistro(rs));
             return lista;
         }
     }
-    public void inserir(Object obj) throws SQLException {
-        Fornecedor f = (Fornecedor) obj;
-        try (PreparedStatement ps = dataSource.preparar(
+    public Fornecedor inserir() throws SQLException {
+        Fornecedor f = new Fornecedor();
+        f.id_municipio = lerPrimeiroId("municipio");
+
+        try (var ps = dataSource.preparar(
                 "insert into fornecedor (cep, ativo, bairro, complemento, coordenadas, logo, cnp, email, numero, rua, senha, id_municipio, tipo, telefone, nome) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 String.valueOf(f.cep),
                 f.ativo ? "1" : "0",
@@ -62,11 +64,13 @@ public class DAOFornecedor extends DAO<Fornecedor> {
                 f.nome
         )) {
             ps.executeUpdate();
+            return f;
         }
     }
     public void alterar(Object obj) throws SQLException {
         Fornecedor f = (Fornecedor) obj;
-        try (PreparedStatement ps = dataSource.preparar(
+
+        try (var ps = dataSource.preparar(
                 "update fornecedor set cep=?, ativo=?, bairro=?, complemento=?, coordenadas=?, logo=?, cnp=?, email=?, numero=?, rua=?, senha=?, id_municipio=?, tipo=?, telefone=?, nome=? where id_fornecedor=?",
                 String.valueOf(f.cep),
                 f.ativo ? "1" : "0",
@@ -89,7 +93,7 @@ public class DAOFornecedor extends DAO<Fornecedor> {
         }
     }
     public void deletar(Object obj) throws SQLException {
-        try (PreparedStatement ps = dataSource.preparar(
+        try (var ps = dataSource.preparar(
                 "delete from fornecedor where (id_fornecedor = ?)",
                 String.valueOf(((Fornecedor) obj).id_fornecedor)
         )) {

@@ -26,13 +26,13 @@ public class Fornecedor {
 
         // Local
         @CampoSQL(larguraColuna = 50)
-        public int numero = 0;
+        public int numero;
         @CampoSQL
         public String rua = "";
         @CampoSQL
         public String bairro = "";
         @CampoSQL(larguraColuna = 80)
-        public int cep = 0;
+        public int cep;
         @CampoSQL(larguraColuna = 50)
         public String complemento = "casa";
         @CampoSQL(larguraColuna = 150)
@@ -40,5 +40,5 @@ public class Fornecedor {
 
         //FK
         @CampoSQL(nomeColuna = "ID Município (FK)", larguraColuna = 100)
-        public int id_municipio = 1;
+        public int id_municipio;
 }
