@@ -1,9 +1,12 @@
 package model;
 
-public record ImagemPontoColeta(
-        int id_imagem_ponto_coleta,
-        String caminho,
+public class ImagemPontoColeta {
+    @CampoSQL(nomeColuna = "ID", larguraColuna = 50)
+    public int id_imagem_ponto_coleta;
+    @CampoSQL
+    public String caminho = "";
 
-        // FK
-        int id_ponto_coleta
-) {}
+    // FK
+    @CampoSQL(nomeColuna = "ID Ponto coleta (FK)", larguraColuna = 150)
+    public int id_ponto_coleta;
+}
