@@ -84,6 +84,10 @@ public class Menu extends JFrame {
 
         // Deleta as linhas armazenadas
         ((DAOTableModel) tabela.getModel()).removerRegistros(selection.getMinSelectionIndex(), selection.getMaxSelectionIndex());
+
+        // Recarrega a tabela para evitar diferenças entre o registro local e o BD
+        // no caso da remoção de registros usados como FKs
+        carregarTabela();
     }
 
     void adicionarLinha() {
