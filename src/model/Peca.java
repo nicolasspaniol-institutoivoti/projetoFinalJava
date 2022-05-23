@@ -5,12 +5,14 @@ public class Peca {
     public int id_peca;
     @CampoSQL(larguraColuna = 50)
     public int tamanho;
-    @CampoSQL(larguraColuna = 50)
-    public String cor;
+    @CampoSQL(larguraColuna = 75)
+    public String cor = "";
     @CampoSQL(nomeColuna = "Descrição")
-    public String descricao;
-    @CampoSQL(nomeColuna = "Preço", larguraColuna = 100)
-    public int preco; // Em centavos
+    public String descricao = "";
+    @CampoSQL(nomeColuna = "Título")
+    public String titulo = "";
+    @CampoSQL(nomeColuna = "Preço (centavos)", larguraColuna = 100)
+    public int preco;
 
     // FK
     @CampoSQL(nomeColuna = "ID Reserva (FK)", larguraColuna = 100)

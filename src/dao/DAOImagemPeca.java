@@ -14,7 +14,7 @@ public class DAOImagemPeca extends DAO<ImagemPeca> {
     public ImagemPeca lerRegistro(ResultSet rs) throws SQLException {
         ImagemPeca ip = new ImagemPeca();
 
-        ip.id_imagem_peca = rs.getInt("id_categoria_peca");
+        ip.id_imagem_peca = rs.getInt("id_imagem_peca");
         ip.caminho = rs.getString("caminho");
         ip.id_peca = rs.getInt("id_peca");
 
@@ -43,9 +43,10 @@ public class DAOImagemPeca extends DAO<ImagemPeca> {
     public void alterar(Object obj) throws SQLException {
         ImagemPeca ip = (ImagemPeca) obj;
         try (var ps = dataSource.preparar(
-                "update imagem_peca set caminho=?, id_peca=? where id_categoria_peca=?",
+                "update imagem_peca set caminho=?, id_peca=? where id_imagem_peca=?",
                 ip.caminho,
-                String.valueOf(ip.id_peca)
+                String.valueOf(ip.id_peca),
+                String.valueOf(ip.id_imagem_peca)
         )) {
             ps.executeUpdate();
         }
