@@ -15,7 +15,7 @@ public class DAOImagemPeca extends DAO<ImagemPeca> {
         ImagemPeca ip = new ImagemPeca();
 
         ip.id_imagem_peca = rs.getInt("id_imagem_peca");
-        ip.caminho = rs.getString("caminho");
+        ip.imagem = rs.getString("imagem");
         ip.id_peca = rs.getInt("id_peca");
 
         return ip;
@@ -33,7 +33,7 @@ public class DAOImagemPeca extends DAO<ImagemPeca> {
 
         try (var ps = dataSource.preparar(
                 "insert into imagem_peca (caminho, id_peca) values (?, ?)",
-                ip.caminho,
+                ip.imagem,
                 String.valueOf(ip.id_peca)
         )) {
             ps.executeUpdate();
@@ -44,7 +44,7 @@ public class DAOImagemPeca extends DAO<ImagemPeca> {
         ImagemPeca ip = (ImagemPeca) obj;
         try (var ps = dataSource.preparar(
                 "update imagem_peca set caminho=?, id_peca=? where id_imagem_peca=?",
-                ip.caminho,
+                ip.imagem,
                 String.valueOf(ip.id_peca),
                 String.valueOf(ip.id_imagem_peca)
         )) {

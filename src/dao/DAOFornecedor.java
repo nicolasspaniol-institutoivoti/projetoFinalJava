@@ -16,21 +16,14 @@ public class DAOFornecedor extends DAO<Fornecedor> {
         Fornecedor f = new Fornecedor();
 
         f.id_fornecedor = rs.getInt("id_fornecedor");
-        f.cep = rs.getInt("cep");
         f.ativo = rs.getBoolean("ativo");
-        f.bairro = rs.getString("bairro");
-        f.complemento = rs.getString("complemento");
-        f.coordenadas = rs.getString("coordenadas");
-        f.logo = rs.getString("logo");
         f.cnp = rs.getString("cnp");
         f.email = rs.getString("email");
-        f.numero = rs.getShort("numero");
-        f.rua = rs.getString("rua");
         f.senha = rs.getString("senha");
-        f.id_municipio = rs.getInt("id_municipio");
         f.tipo = TipoFornecedor.values()[rs.getInt("tipo")];
         f.telefone = rs.getString("telefone");
         f.nome = rs.getString("nome");
+        f.imagem = rs.getString("imagem");
 
         return f;
     }
@@ -43,25 +36,16 @@ public class DAOFornecedor extends DAO<Fornecedor> {
     }
     public Fornecedor inserir() throws SQLException {
         Fornecedor f = new Fornecedor();
-        f.id_municipio = lerPrimeiroId("municipio");
 
         try (var ps = dataSource.preparar(
-                "insert into fornecedor (cep, ativo, bairro, complemento, coordenadas, logo, cnp, email, numero, rua, senha, id_municipio, tipo, telefone, nome) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                String.valueOf(f.cep),
-                f.ativo ? "1" : "0",
-                f.bairro,
-                f.complemento,
-                f.coordenadas,
-                f.logo,
-                f.cnp,
-                f.email,
-                String.valueOf(f.numero),
-                f.rua,
-                f.senha,
-                String.valueOf(f.id_municipio),
-                f.tipo == TipoFornecedor.Brechó ? "1" : "0",
+                "insert into fornecedor (nome, telefone, email, senha, cnp, tipo, ativo) values (?, ?, ?, ?, ?, ?, ?)",
+                f.nome,
                 f.telefone,
-                f.nome
+                f.email,
+                f.senha,
+                f.cnp,
+                f.tipo == TipoFornecedor.Brechó ? "1" : "0",
+                f.ativo ? "1" : "0"
         )) {
             ps.executeUpdate();
             return f;
@@ -71,22 +55,14 @@ public class DAOFornecedor extends DAO<Fornecedor> {
         Fornecedor f = (Fornecedor) obj;
 
         try (var ps = dataSource.preparar(
-                "update fornecedor set cep=?, ativo=?, bairro=?, complemento=?, coordenadas=?, logo=?, cnp=?, email=?, numero=?, rua=?, senha=?, id_municipio=?, tipo=?, telefone=?, nome=? where id_fornecedor=?",
-                String.valueOf(f.cep),
-                f.ativo ? "1" : "0",
-                f.bairro,
-                f.complemento,
-                f.coordenadas,
-                f.logo,
-                f.cnp,
-                f.email,
-                String.valueOf(f.numero),
-                f.rua,
-                f.senha,
-                String.valueOf(f.id_municipio),
-                f.tipo == TipoFornecedor.Brechó ? "1" : "0",
-                f.telefone,
+                "update fornecedor set nome=?, telefone=?, email=?, senha=?, cnp=?, tipo=?, ativo=? where id_fornecedor=?",
                 f.nome,
+                f.telefone,
+                f.email,
+                f.senha,
+                f.cnp,
+                f.tipo == TipoFornecedor.Brechó ? "1" : "0",
+                f.ativo ? "1" : "0",
                 String.valueOf(f.id_fornecedor)
         )) {
             ps.executeUpdate();

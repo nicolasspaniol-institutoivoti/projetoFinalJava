@@ -54,7 +54,6 @@ public class Menu extends JFrame {
         mapaDAOs.put("Reservas", DAOReserva.class);
         mapaDAOs.put("Fornecedores", DAOFornecedor.class);
         mapaDAOs.put("Pontos de coleta", DAOPontoColeta.class);
-        mapaDAOs.put("Imagens dos pontos de coleta", DAOImagemPontoColeta.class);
         mapaDAOs.put("Peças", DAOPeca.class);
         mapaDAOs.put("Reportes", DAOReporte.class);
 

@@ -15,7 +15,7 @@ public class DAOPeca extends DAO<Peca> {
         Peca p = new Peca();
 
         p.id_peca = rs.getInt("id_peca");
-        p.tamanho = rs.getInt("tamanho");
+        p.tamanho = rs.getString("tamanho");
         p.cor = rs.getString("cor");
         p.descricao = rs.getString("descricao");
         p.preco = rs.getInt("preco");

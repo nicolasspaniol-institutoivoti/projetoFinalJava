@@ -5,20 +5,20 @@ public class PontoColeta {
     public int id_ponto_coleta;
     @CampoSQL(nomeColuna = "Horário de atendimento")
     public String horario = "";
+    @CampoSQL(larguraColuna = 50)
+    public boolean sede = false;
 
     // Local
     @CampoSQL(larguraColuna = 50)
     public int numero;
     @CampoSQL
     public String rua = "";
-    @CampoSQL
-    public String bairro = "";
-    @CampoSQL(larguraColuna = 80)
+    @CampoSQL(larguraColuna = 60)
     public int cep;
-    @CampoSQL(larguraColuna = 50)
+    @CampoSQL(larguraColuna = 80)
     public String complemento = "casa";
-    @CampoSQL(larguraColuna = 150)
-    public String coordenadas = "";
+    @CampoSQL(larguraColuna = 100, nomeColuna = "Referência")
+    public String referencia = "";
 
     //FK
     @CampoSQL(nomeColuna = "ID Município (FK)", larguraColuna = 100)
